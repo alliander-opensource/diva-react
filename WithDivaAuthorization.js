@@ -1,16 +1,18 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 
 import RequestAttributeDisclosure from './containers/RequestAttributeDisclosure/RequestAttributeDisclosure';
 
 /**
- * HOC that Handles whether or not the user is allowed to see the page.
- * @param {string} requiredAttribute - user attribute that is required to see the page.
- * @param {string} attributeLabel - label for this attribute
+ * React middleware function that renders based on required and available attributes.
+ * @param {object} options - options for the
  * @returns {Component}
  */
-export default function WithDivaAuthorization(content) {
+export default function withDivaAuthorization(options) {
+  // TODO options parsing
+  const attributes = options.attributes || [];
+  const requiredAttributes = options.requiredAttributes || [];
+
   return (WrappedComponent) => {
     class WithAuthorization extends Component {
       static propTypes = {
@@ -21,9 +23,9 @@ export default function WithDivaAuthorization(content) {
         }),
       };
 
-      hasRequiredAttributes = (existing, contentToCheck) => {
-        const existingAttributes = Object.keys(existing);
-        return contentToCheck.reduce(
+      hasRequiredAttributes = (attributes, requiredAttributes) => {
+        const existingAttributes = Object.keys(attributes);
+        return requiredAttributes.reduce(
           (accumulator, attributeGroup) =>
             accumulator && attributeGroup.attributes.some(el => existingAttributes.includes(el)),
           true,
@@ -31,13 +33,12 @@ export default function WithDivaAuthorization(content) {
       }
 
       render() {
-        const { user } = this.props;
-        if (this.hasRequiredAttributes(user.attributes, content)) {
+        if (this.hasRequiredAttributes(attributes, requiredAttributes)) {
           return <WrappedComponent {...this.props} />;
         }
-        return <RequestAttributeDisclosure requiredAttributes={content} />;
+        return <RequestAttributeDisclosure requiredAttributes={requiredAttributes} />;
       }
     }
-    return connect(state => ({ user: state.user }))(WithAuthorization);
+    return WithAuthorization;
   };
 }
