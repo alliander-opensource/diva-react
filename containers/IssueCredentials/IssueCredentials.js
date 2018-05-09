@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import QRCode from 'qrcode.react';
 import { Row, Col } from 'react-flexbox-grid';
@@ -13,6 +14,8 @@ import IconAlertError from 'material-ui/svg-icons/alert/error';
 import IconButton from 'material-ui/IconButton';
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar';
 
+import { actions } from '../../reducers/diva-reducer';
+
 class IssueCredentials extends Component {
   constructor(props) {
     super(props);
@@ -26,38 +29,40 @@ class IssueCredentials extends Component {
   componentDidMount() {
     this._isMounted = true;
     if (!this.state.sessionStarted) {
-      this.fetchQR();
+      console.log('starting session');
+      this.props.startIrmaSession('ISSUE', { credentialType: this.props.credentialType });
+      // this.fetchQR();
     }
   }
 
-  fetchQR = () => {
-    const { credentialType } = this.props;
-    this.setState({
-      issueStatus: 'PENDING',
-      serverStatus: 'INITIALIZED',
-      sessionStarted: true,
-    });
-    axios
-      .post('/api/start-irma-session', {
-        type: 'ISSUE',
-        credentialType,
-      }, {
-        withCredentials: true,
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-      })
-      .then(response => response.data)
-      .then(data => {
-        if (this._isMounted) {
-          this.setState({
-            qrContent: data.qrContent,
-          });
-          this.startPolling(data.irmaSessionId);
-        }
-      });
-  }
+  // fetchQR = () => {
+  //   const { credentialType } = this.props;
+  //   this.setState({
+  //     issueStatus: 'PENDING',
+  //     serverStatus: 'INITIALIZED',
+  //     sessionStarted: true,
+  //   });
+  //   axios
+  //     .post('/api/start-irma-session', {
+  //       type: 'ISSUE',
+  //       credentialType,
+  //     }, {
+  //       withCredentials: true,
+  //       headers: {
+  //         'Accept': 'application/json',
+  //         'Content-Type': 'application/json'
+  //       },
+  //     })
+  //     .then(response => response.data)
+  //     .then(data => {
+  //       if (this._isMounted) {
+  //         this.setState({
+  //           qrContent: data.qrContent,
+  //         });
+  //         this.startPolling(data.irmaSessionId);
+  //       }
+  //     });
+  // }
 
   startPolling = irmaSessionId => {
     const pollTimerId = setInterval(this.poll, 1000, irmaSessionId, this);
@@ -113,8 +118,8 @@ class IssueCredentials extends Component {
     const {
       qrContent,
       issueStatus,
-      proofStatus,
-      serverStatus
+      // proofStatus,
+      serverStatus,
     } = this.state;
 
     return (
@@ -276,8 +281,15 @@ class IssueCredentials extends Component {
 
 IssueCredentials.propTypes = {
   credentialType: PropTypes.string.isRequired,
+  startIrmaSession: PropTypes.func.isRequired,
   onComplete: PropTypes.func.isRequired,
   onFailure: PropTypes.func.isRequired,
 }
 
-export default IssueCredentials;
+const mapStateToProps = () => ({});
+
+const mapDispatchToProps = {
+  startIrmaSession: actions.startIrmaSession,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(IssueCredentials);
