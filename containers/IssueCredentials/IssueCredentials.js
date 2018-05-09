@@ -13,11 +13,11 @@ import IconAlertError from 'material-ui/svg-icons/alert/error';
 import IconButton from 'material-ui/IconButton';
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar';
 
-class SignPolicy extends Component {
+class IssueCredentials extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      signatureStatus: 'PENDING',
+      issueStatus: 'PENDING',
       serverStatus: 'INITIALIZED',
       sessionStarted: false,
     };
@@ -31,17 +31,16 @@ class SignPolicy extends Component {
   }
 
   fetchQR = () => {
-    const { requiredAttributes, message } = this.props;
+    const { credentialType } = this.props;
     this.setState({
-      signatureStatus: 'PENDING',
+      issueStatus: 'PENDING',
       serverStatus: 'INITIALIZED',
       sessionStarted: true,
     });
     axios
       .post('/api/start-irma-session', {
-        type: 'SIGN',
-        content: requiredAttributes,
-        message,
+        type: 'ISSUE',
+        credentialType,
       }, {
         withCredentials: true,
         headers: {
@@ -74,14 +73,14 @@ class SignPolicy extends Component {
 
   poll(irmaSessionId, self) {
     self
-      .getSignatureStatus(irmaSessionId)
+      .getIssueStatus(irmaSessionId)
       .then(result => {
+        console.log(result);
         self.setState({
-          signatureStatus: result.signatureStatus,
+          issueStatus: result.issueStatus,
           serverStatus: result.serverStatus,
-          proofStatus: result.proofStatus,
         });
-        switch (result.signatureStatus) {
+        switch (result.issueStatus) {
           case 'COMPLETED':
             self.stopPolling();
             self.props.onComplete(result);
@@ -96,9 +95,9 @@ class SignPolicy extends Component {
       });
   }
 
-  getSignatureStatus(irmaSessionId) {
+  getIssueStatus(irmaSessionId) {
     return  axios
-      .get(`/api/signature-status?irmaSessionId=${irmaSessionId}`, {
+      .get(`/api/issue-status?irmaSessionId=${irmaSessionId}`, {
         withCredentials: true,
       })
       .then(response => response.data);
@@ -110,10 +109,10 @@ class SignPolicy extends Component {
   }
 
   render() {
-    const { requiredAttributes, message } = this.props;
+    const { credentialType } = this.props;
     const {
       qrContent,
-      signatureStatus,
+      issueStatus,
       proofStatus,
       serverStatus
     } = this.state;
@@ -123,12 +122,12 @@ class SignPolicy extends Component {
         {qrContent ? (
           <div>
 
-            {(signatureStatus === 'PENDING') && (
+            {(issueStatus === 'PENDING') && (
               <div>
 
                 <Toolbar style={{ backgroundColor: 'none' }}>
                   <ToolbarGroup>
-                    <ToolbarTitle text='Toestemming instellen' />
+                    <ToolbarTitle text='Attributen uitgeven' />
                   </ToolbarGroup>
                   <ToolbarGroup lastChild={true}>
                     <IconButton tooltip="Help">
@@ -144,11 +143,8 @@ class SignPolicy extends Component {
                   <div style={{ padding: '20px' }}>
                     <Row center="xs">
                       <Col xs={6}>
-                        Toestemming: {message}
+                        Credential(s) type: {credentialType}
                         <br />
-                        Ondertekenen met: <br />
-                        <b>{requiredAttributes.map(el => el.label).join(', ')}</b><br />
-                        <br/>
                       </Col>
                     </Row>
                     <Row center="xs">
@@ -160,7 +156,7 @@ class SignPolicy extends Component {
                     </Row>
                     <Row center="xs">
                       <Col xs={6}>
-                        Scan de QR-code met de IRMA app om de toestemming te ondertekenen.
+                        Scan de QR-code met de IRMA app om de credentials te ontvangen.
                         <br/>
                       </Col>
                     </Row>
@@ -171,7 +167,7 @@ class SignPolicy extends Component {
                   <div style={{ padding: '20px' }} id='qr-scanned'>
                     <Row center="xs">
                       <Col xs={6}>
-                        Om verder te gaan, onderteken het bericht in IRMA-app.<br/>
+                        Om verder te gaan, accepteerde credentials in IRMA-app.<br/>
                         <br/>
                       </Col>
                     </Row>
@@ -181,10 +177,10 @@ class SignPolicy extends Component {
               </div>
             )}
 
-            {(signatureStatus === 'COMPLETED') && (
+            {(issueStatus === 'COMPLETED') && (
               <div>
-                {(proofStatus === 'VALID') ? (
-                  <div id='signature-proof-completed'>
+                {(serverStatus === 'DONE') ? (
+                  <div id='issuing-completed'>
                     <Row center="xs">
                       <Col xs>
                         <IconActionCheckCircle style={{ width: '100px', height: '100px', color: 'limegreen'}}/>
@@ -192,12 +188,12 @@ class SignPolicy extends Component {
                     </Row>
                     <Row center="xs">
                       <Col xs={6}>
-                        Toestemming succesvol ingesteld!
+                        Credentials succesvol uitgegeven!
                       </Col>
                     </Row>
                   </div>
                 ) : (
-                  <div id="signature-error">
+                  <div id="issue-error">
                     <Row center="xs">
                       <Col xs>
                         <IconAlertError style={{ width: '100px', height: '100px', color: 'orangered'}}/>
@@ -216,11 +212,11 @@ class SignPolicy extends Component {
                 )}
               </div>
             )}
-            {(signatureStatus === 'ABORTED') && (
+            {(issueStatus === 'ABORTED') && (
               <div>
               <Toolbar style={{ backgroundColor: 'none' }}>
                 <ToolbarGroup>
-                  <ToolbarTitle text="Toestemming instellen geannuleerd" />
+                  <ToolbarTitle text="Credentials uitgeven geannuleerd" />
                 </ToolbarGroup>
                 <ToolbarGroup lastChild={true}>
                   <IconButton tooltip="Help">
@@ -233,10 +229,10 @@ class SignPolicy extends Component {
               </Toolbar>
 
                 {(serverStatus === 'CANCELLED') && (
-                  <div style={{ padding: '20px' }} id="signature-cancelled">
+                  <div style={{ padding: '20px' }} id="issue-cancelled">
                     <Row center="xs">
                       <Col xs={6}>
-                        Je hebt het toestemming instellen geannuleerd.<br/>
+                        Je hebt het uitgeven van credentials geannuleerd.<br/>
                         <br/>
                         <RaisedButton label="Retry"
                           primary={true} style={{}}
@@ -278,11 +274,10 @@ class SignPolicy extends Component {
   }
 }
 
-SignPolicy.propTypes = {
-  requiredAttributes: PropTypes.array.isRequired,
-  message: PropTypes.string.isRequired, // TODO: include entire policy
+IssueCredentials.propTypes = {
+  credentialType: PropTypes.string.isRequired,
   onComplete: PropTypes.func.isRequired,
   onFailure: PropTypes.func.isRequired,
 }
 
-export default SignPolicy;
+export default IssueCredentials;

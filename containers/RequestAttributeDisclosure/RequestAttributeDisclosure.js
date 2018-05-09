@@ -79,6 +79,7 @@ class RequestAttributeDisclosure extends Component {
     });
     axios
       .post('/api/start-irma-session', {
+        type: 'DISCLOSE',
         content: requiredAttributes
       }, {
         withCredentials: true,
