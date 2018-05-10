@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import QRCode from 'qrcode.react';
 import { Row, Col } from 'react-flexbox-grid';
-import axios from 'axios';
+// import axios from 'axios';
 import RaisedButton from 'material-ui/RaisedButton';
 import CircularProgress from 'material-ui/CircularProgress';
 import IconActionCheckCircle from 'material-ui/svg-icons/action/check-circle';
@@ -24,94 +24,63 @@ class IssueCredentials extends Component {
       serverStatus: 'INITIALIZED',
       sessionStarted: false,
     };
+    console.log('starting session');
+    this.props.startIrmaSession('ISSUE', { credentialType: this.props.credentialType });
   }
 
-  componentDidMount() {
-    this._isMounted = true;
-    if (!this.state.sessionStarted) {
-      console.log('starting session');
-      this.props.startIrmaSession('ISSUE', { credentialType: this.props.credentialType });
-      // this.fetchQR();
-    }
-  }
+  // componentDidMount() {
+  //   this._isMounted = true;
+  //   if (!this.state.sessionStarted) {
+  //     console.log('starting session');
+  //     this.props.startIrmaSession('ISSUE', { credentialType: this.props.credentialType });
+  //     // this.fetchQR();
+  //   }
+  // }
 
-  // fetchQR = () => {
-  //   const { credentialType } = this.props;
-  //   this.setState({
-  //     issueStatus: 'PENDING',
-  //     serverStatus: 'INITIALIZED',
-  //     sessionStarted: true,
-  //   });
-  //   axios
-  //     .post('/api/start-irma-session', {
-  //       type: 'ISSUE',
-  //       credentialType,
-  //     }, {
-  //       withCredentials: true,
-  //       headers: {
-  //         'Accept': 'application/json',
-  //         'Content-Type': 'application/json'
-  //       },
-  //     })
-  //     .then(response => response.data)
-  //     .then(data => {
-  //       if (this._isMounted) {
-  //         this.setState({
-  //           qrContent: data.qrContent,
-  //         });
-  //         this.startPolling(data.irmaSessionId);
+  // startPolling = irmaSessionId => {
+  //   const pollTimerId = setInterval(this.poll, 1000, irmaSessionId, this);
+  //   this.setState({ pollTimerId });
+  // }
+
+  // stopPolling = () => {
+  //   if (this.state.pollTimerId) {
+  //     clearInterval(this.state.pollTimerId);
+  //     this.setState({ pollTimerId: undefined });
+  //   }
+  // }
+
+  // poll(irmaSessionId, self) {
+  //   self
+  //     .getIssueStatus(irmaSessionId)
+  //     .then(result => {
+  //       console.log(result);
+  //       self.setState({
+  //         issueStatus: result.issueStatus,
+  //         serverStatus: result.serverStatus,
+  //       });
+  //       switch (result.issueStatus) {
+  //         case 'COMPLETED':
+  //           self.stopPolling();
+  //           self.props.onComplete(result);
+  //           break;
+  //         case 'ABORTED':
+  //           self.props.onFailure(result);
+  //           self.stopPolling();
+  //           break;
+  //         default:
+  //           break;
   //       }
   //     });
   // }
 
-  startPolling = irmaSessionId => {
-    const pollTimerId = setInterval(this.poll, 1000, irmaSessionId, this);
-    this.setState({ pollTimerId });
-  }
+  // getIssueStatus(irmaSessionId) {
 
-  stopPolling = () => {
-    if (this.state.pollTimerId) {
-      clearInterval(this.state.pollTimerId);
-      this.setState({ pollTimerId: undefined });
-    }
-  }
+  // }
 
-  poll(irmaSessionId, self) {
-    self
-      .getIssueStatus(irmaSessionId)
-      .then(result => {
-        console.log(result);
-        self.setState({
-          issueStatus: result.issueStatus,
-          serverStatus: result.serverStatus,
-        });
-        switch (result.issueStatus) {
-          case 'COMPLETED':
-            self.stopPolling();
-            self.props.onComplete(result);
-            break;
-          case 'ABORTED':
-            self.props.onFailure(result);
-            self.stopPolling();
-            break;
-          default:
-            break;
-        }
-      });
-  }
-
-  getIssueStatus(irmaSessionId) {
-    return  axios
-      .get(`/api/issue-status?irmaSessionId=${irmaSessionId}`, {
-        withCredentials: true,
-      })
-      .then(response => response.data);
-  }
-
-  componentWillUnmount() {
-    this._isMounted = false;
-    this.stopPolling();
-  }
+  // componentWillUnmount() {
+  //   this._isMounted = false;
+  //   this.stopPolling();
+  // }
 
   render() {
     const { credentialType } = this.props;

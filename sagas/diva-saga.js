@@ -1,5 +1,5 @@
 import { delay } from 'redux-saga';
-import { take, put, call, race, all, takeEvery } from 'redux-saga/effects';
+import { take, put, call, race, all, takeEvery, fork } from 'redux-saga/effects';
 
 import { types, actions } from '../reducers/diva-reducer';
 import service from '../services/diva-service';
@@ -19,11 +19,12 @@ function* startIrmaSessionSaga(action) {
  * Polling saga worker.
  */
 function* pollSaga(action) {
+  console.log(action);
   while (true) {
     try {
-      const { data } = yield call(service.poll, action.irmaSessionId);
+      const data = yield call(service.poll, action.irmaSessionId);
       yield put(actions.processPollSuccess(action.irmaSessionId, data));
-      yield call(delay, 1000);
+      yield call(delay, 4000);
     } catch (err) {
       yield put(actions.processPollFailure(action.irmaSessionId, err));
       console.log(err);
@@ -35,6 +36,7 @@ function* pollSaga(action) {
  * Polling saga watcher.
  */
 export function* watchPollSaga() {
+  console.log('WATCHING');
   while (true) {
     const action = yield take(types.START_POLLING);
     console.log(action);
@@ -45,8 +47,11 @@ export function* watchPollSaga() {
   }
 }
 
-const divaSagas = [
-  takeEvery(types.START_SESSION, startIrmaSessionSaga),
-];
+function* divaSagas() {
+  yield all([
+    takeEvery(types.START_SESSION, startIrmaSessionSaga),
+    fork(watchPollSaga),
+  ]);
+}
 
 export default divaSagas;

@@ -45,8 +45,8 @@ export const actions = {
     ({ type: types.START_SESSION, irmaSessionType, options }),
   irmaSessionStarted: (irmaSessionId, qrContent) =>
     ({ type: types.SESSION_STARTED, irmaSessionId, qrContent }),
-  startPolling: () => ({ type: types.START_POLLING }),
-  stopPolling: () => ({ type: types.STOP_POLLING }),
+  startPolling: irmaSessionId => ({ type: types.START_POLLING, irmaSessionId }),
+  stopPolling: irmaSessionId => ({ type: types.STOP_POLLING, irmaSessionId }),
   processPollSuccess: data => ({ type: types.PROCESS_POLL_SUCCESS, data }),
   processPollFailure: data => ({ type: types.PROCESS_POLL_FAILURE, data }),
   // login: (email, password) => ({ type: actionTypes.LOGIN_REQUEST, email, password }),

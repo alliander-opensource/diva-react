@@ -16,9 +16,18 @@ function startIrmaSession(irmaSessionType, options) {
     .then(response => response.data);
 }
 
+function poll(irmaSessionId) {
+  console.log('poll', irmaSessionId);
+  return axios
+    .get(`/api/issue-status?irmaSessionId=${irmaSessionId}`, {
+      withCredentials: true,
+    })
+    .then(response => response.data);
+}
+
 const service = {
   startIrmaSession,
-  poll: () => axios({ url: '' }),
+  poll,
 };
 
 export default service;
