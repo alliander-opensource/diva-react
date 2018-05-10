@@ -7,42 +7,52 @@ import service from '../services/diva-service';
 function* startIrmaSessionSaga(action) {
   try {
     const response = yield call(service.startIrmaSession, action.irmaSessionType, action.options);
-    yield put(actions.irmaSessionStarted(response.irmaSessionId, response.qrContent));
-    yield put(actions.startPolling(response.irmaSessionId));
+    console.log('RESPONSE', response);
+    if (response.irmaSessionId && response.qrContent) {
+      yield put(actions.irmaSessionStarted(response.irmaSessionId, response.qrContent));
+      yield put(actions.startPolling(response.irmaSessionId));
+    } else {
+      // Error starting IRMA session: server error
+      //yield put(actions.irmaSessionStarted(response.irmaSessionId, response.qrContent));
+    }
   } catch (err) {
+    // Error starting IRMA session: network error
     // yield put(actions.processPollFailure(err));
     console.log(err); // TODO failure case
   }
 }
 
-/**
- * Polling saga worker.
- */
-function* pollSaga(action) {
-  console.log(action);
+function* cancelIrmaSessionSaga(action) {
+  // TODO: do more cleanup when cancelling, for now we just cancel polling
+  yield put(actions.stopPolling(action.irmaSessionId));
+}
+
+function* pollIrmaSessionSaga(irmaSessionId) {
   while (true) {
     try {
-      const data = yield call(service.poll, action.irmaSessionId);
-      yield put(actions.processPollSuccess(action.irmaSessionId, data));
-      yield call(delay, 4000);
+      // console.log('POLL');
+      const data = yield call(service.poll, irmaSessionId);
+      console.log(data);
+      yield put(actions.processPollSuccess(irmaSessionId, data));
+      if (['NOT_FOUND', 'DONE', 'CANCELLED'].includes(data.serverStatus)) {
+        yield put(actions.stopPolling(irmaSessionId));
+      }
+      // }
+      yield call(delay, 1000);
     } catch (err) {
-      yield put(actions.processPollFailure(action.irmaSessionId, err));
+      yield put(actions.processPollFailure(irmaSessionId, err));
+      yield put(actions.stopPolling(irmaSessionId)); // Stop polling on error
       console.log(err);
     }
   }
 }
 
-/**
- * Polling saga watcher.
- */
 export function* watchPollSaga() {
-  console.log('WATCHING');
   while (true) {
-    const action = yield take(types.START_POLLING);
-    console.log(action);
+    const { irmaSessionId } = yield take(types.START_POLLING);
     yield race([
-      call(pollSaga, action),
-      take(types.STOP_POLLING),
+      call(pollIrmaSessionSaga, irmaSessionId),
+      take(action => action.type === types.STOP_POLLING && action.irmaSessionId === irmaSessionId),
     ]);
   }
 }
@@ -50,6 +60,7 @@ export function* watchPollSaga() {
 function* divaSagas() {
   yield all([
     takeEvery(types.START_SESSION, startIrmaSessionSaga),
+    takeEvery(types.CANCEL_SESSION, cancelIrmaSessionSaga),
     fork(watchPollSaga),
   ]);
 }

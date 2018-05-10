@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 function startIrmaSession(irmaSessionType, options) {
-  console.log(irmaSessionType, options);
   return axios
     .post('/api/start-irma-session', {
       type: irmaSessionType,
@@ -17,7 +16,6 @@ function startIrmaSession(irmaSessionType, options) {
 }
 
 function poll(irmaSessionId) {
-  console.log('poll', irmaSessionId);
   return axios
     .get(`/api/issue-status?irmaSessionId=${irmaSessionId}`, {
       withCredentials: true,
