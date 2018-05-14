@@ -4,41 +4,34 @@ import PropTypes from 'prop-types';
 import RequestAttributeDisclosure from './containers/RequestAttributeDisclosure/RequestAttributeDisclosure';
 
 /**
- * React middleware function that renders based on required and available attributes.
- * @param {object} options - options for the
+ * React middleware function that renders based on available and required attributes.
+ * @param {object} attributes - a key value object containing available attributes
+ * @param {array} requiredAttributes - an array containing required attributes with their label
  * @returns {Component}
  */
-export default function withDivaAuthorization(options) {
-  // TODO options parsing
-  const attributes = options.attributes || [];
-  const requiredAttributes = options.requiredAttributes || [];
-
+export default function withDivaAuthorization(attributes = {}, requiredAttributes = []) {
   return (WrappedComponent) => {
     class WithAuthorization extends Component {
-      static propTypes = {
-        user: PropTypes.shape({
-          isFetching: PropTypes.bool.isRequired,
-          sessionId: PropTypes.string.isRequired,
-          attributes: PropTypes.objectOf(PropTypes.array).isRequired,
-        }),
-      };
-
-      hasRequiredAttributes = (attributes, requiredAttributes) => {
+      hasRequiredAttributes = () => {
         const existingAttributes = Object.keys(attributes);
         return requiredAttributes.reduce(
-          (accumulator, attributeGroup) =>
-            accumulator && attributeGroup.attributes.some(el => existingAttributes.includes(el)),
+          (accumulator, requiredAttribute) =>
+            accumulator && requiredAttribute.attributes.some(el => existingAttributes.includes(el)),
           true,
         );
       }
 
       render() {
         if (this.hasRequiredAttributes(attributes, requiredAttributes)) {
-          return <WrappedComponent {...this.props} />;
+          return <WrappedComponent />;
         }
         return <RequestAttributeDisclosure requiredAttributes={requiredAttributes} />;
       }
     }
+    WithAuthorization.PropTypes = {
+      attributes: PropTypes.object.isRequired,
+      requiredAttributes: PropTypes.array.isRequired,
+    };
     return WithAuthorization;
   };
 }
