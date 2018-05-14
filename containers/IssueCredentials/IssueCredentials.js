@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+
 import { Row, Col } from 'react-flexbox-grid';
 import CircularProgress from 'material-ui/CircularProgress';
 
@@ -37,44 +38,7 @@ class IssueCredentials extends Component {
 
     return (
       <div>
-
-        {(sessionStatus === 'INITIALIZED' || sessionStatus === 'CONNECTED') && (
-          <div>
-
-            <IssueCredentialsToolbar />
-
-            {(sessionStatus === 'INITIALIZED') && (
-              <IssueCredentialsInitialized credentialType={credentialType} qrContent={qrContent} />
-            )}
-
-            {(sessionStatus === 'CONNECTED') && (
-              <IssueCredentialsConnected />
-            )}
-
-          </div>
-        )}
-
-        {(sessionStatus === 'DONE' || sessionCompleted === true) && (
-          <IssueCredentialsDone />
-        )}
-
-        {(sessionStatus === 'FAILED_TO_START') && (
-          <IssueCredentialsError onRetry={() => this.startIrmaSession()} />
-        )}
-
-        {(sessionStatus === 'CANCELLED' || (sessionStatus === 'NOT_FOUND' && !sessionCompleted)) && (
-          <div>
-            <IssueCredentialsToolbar />
-
-            {(sessionStatus === 'CANCELLED') && (
-              <IssueCredentialsCancelled onRetry={() => this.startIrmaSession()} />
-            )}
-
-            {(sessionStatus === 'NOT_FOUND') && (
-              <IssueCredentialsNotFound onRetry={() => this.startIrmaSession()} />
-            )}
-          </div>
-        )}
+        <IssueCredentialsToolbar />
 
         {(sessionStatus === null) && (
           <div>
@@ -85,6 +49,14 @@ class IssueCredentials extends Component {
             </Row>
           </div>
         )}
+
+        {(sessionStatus === 'FAILED_TO_START') && <IssueCredentialsError onRetry={() => this.startIrmaSession()} /> }
+
+        {(sessionStatus === 'INITIALIZED') && <IssueCredentialsInitialized credentialType={credentialType} qrContent={qrContent} /> }
+        {(sessionStatus === 'CONNECTED') && <IssueCredentialsConnected /> }
+        {(sessionStatus === 'DONE' || sessionCompleted === true) && <IssueCredentialsDone /> }
+        {(sessionStatus === 'CANCELLED') && <IssueCredentialsCancelled onRetry={() => this.startIrmaSession()} /> }
+        {(sessionStatus === 'NOT_FOUND' && !sessionCompleted) && <IssueCredentialsNotFound onRetry={() => this.startIrmaSession()} /> }
       </div>
     );
   }
