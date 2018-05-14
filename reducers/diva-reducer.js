@@ -7,6 +7,7 @@ export const types = {
   STOP_POLLING: 'DIVA/STOP_POLLING',
   PROCESS_POLL_SUCCESS: 'DIVA/PROCESS_POLL_RESULT',
   PROCESS_POLL_FAILURE: 'DIVA/PROCESS_POLL_FAILURE',
+  SESSION_COMPLETED: 'DIVA/SESSION_COMPLETED',
 };
 
 export const initialState = {
@@ -33,6 +34,8 @@ export const actions = {
     ({ type: types.PROCESS_POLL_SUCCESS, irmaSessionId, data }),
   processPollFailure: (irmaSessionId, data) =>
     ({ type: types.PROCESS_POLL_FAILURE, irmaSessionId, data }),
+  irmaSessionCompleted: status =>
+    ({ type: types.SESSION_COMPLETED, status }),
 };
 
 export default (state = initialState, action) => {
@@ -59,8 +62,6 @@ export default (state = initialState, action) => {
       return {
         ...state,
         sessionStatus: action.data.serverStatus,
-        sessionCompleted: state.sessionCompleted || (action.data.serverStatus === 'DONE'),
-        isPolling: !(state.sessionCompleted || (action.data.serverStatus === 'DONE')),
       };
     case types.PROCESS_POLL_FAILURE:
       return {
@@ -71,6 +72,10 @@ export default (state = initialState, action) => {
       return {
         ...state,
         isPolling: false,
+      };
+    case types.SESSION_COMPLETED:
+      return {
+        sessionCompleted: true,
       };
     default:
       return state;

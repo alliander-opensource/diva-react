@@ -29,12 +29,12 @@ function* pollIrmaSessionSaga(irmaSessionId) {
       yield put(actions.processPollSuccess(irmaSessionId, data));
       if (['NOT_FOUND', 'DONE', 'CANCELLED'].includes(data.serverStatus)) {
         yield put(actions.stopPolling(irmaSessionId));
+        yield put(actions.irmaSessionComplete(data.serverStatus));
       }
-      // }
       yield call(delay, 1000);
     } catch (error) {
       yield put(actions.processPollFailure(irmaSessionId, error));
-      yield put(actions.stopPolling(irmaSessionId)); // Stop polling on error
+      yield put(actions.stopPolling(irmaSessionId));
     }
   }
 }
