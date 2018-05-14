@@ -7,42 +7,34 @@ import service from '../services/diva-service';
 function* startIrmaSessionSaga(action) {
   try {
     const response = yield call(service.startIrmaSession, action.irmaSessionType, action.options);
-    console.log('RESPONSE', response);
     if (response.irmaSessionId && response.qrContent) {
       yield put(actions.irmaSessionStarted(response.irmaSessionId, response.qrContent));
       yield put(actions.startPolling(response.irmaSessionId));
     } else {
-      // Error starting IRMA session: server error
-      //yield put(actions.irmaSessionStarted(response.irmaSessionId, response.qrContent));
+      yield put(actions.irmaSessionFailedToStart('Server Error', response));
     }
-  } catch (err) {
-    // Error starting IRMA session: network error
-    // yield put(actions.processPollFailure(err));
-    console.log(err); // TODO failure case
+  } catch (error) {
+    yield put(actions.irmaSessionFailedToStart('Network Error', error));
   }
 }
 
 function* cancelIrmaSessionSaga(action) {
-  // TODO: do more cleanup when cancelling, for now we just cancel polling
   yield put(actions.stopPolling(action.irmaSessionId));
 }
 
 function* pollIrmaSessionSaga(irmaSessionId) {
   while (true) {
     try {
-      // console.log('POLL');
       const data = yield call(service.poll, irmaSessionId);
-      console.log(data);
       yield put(actions.processPollSuccess(irmaSessionId, data));
       if (['NOT_FOUND', 'DONE', 'CANCELLED'].includes(data.serverStatus)) {
         yield put(actions.stopPolling(irmaSessionId));
       }
       // }
       yield call(delay, 1000);
-    } catch (err) {
-      yield put(actions.processPollFailure(irmaSessionId, err));
+    } catch (error) {
+      yield put(actions.processPollFailure(irmaSessionId, error));
       yield put(actions.stopPolling(irmaSessionId)); // Stop polling on error
-      console.log(err);
     }
   }
 }

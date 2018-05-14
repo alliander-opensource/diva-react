@@ -18,12 +18,10 @@ import { actions } from '../../reducers/diva-reducer';
 
 class IssueCredentials extends Component {
   componentDidMount() {
-    console.log('starting session');
     this.startIrmaSession();
   }
 
   componentWillUnmount() {
-    console.log('cancelling session', this.props.irmaSessionId);
     this.props.cancelIrmaSession(this.props.irmaSessionId);
   }
 
@@ -42,153 +40,151 @@ class IssueCredentials extends Component {
 
     return (
       <div>
-        {qrContent ? (
+
+        {(sessionStatus === 'INITIALIZED' || sessionStatus === 'CONNECTED') && (
           <div>
 
-            {(sessionStatus === 'INITIALIZED' || sessionStatus === 'CONNECTED') && (
-              <div>
+            <Toolbar style={{ backgroundColor: 'none' }}>
+              <ToolbarGroup>
+                <ToolbarTitle text="Attributen uitgeven" />
+              </ToolbarGroup>
+              <ToolbarGroup lastChild>
+                <IconButton tooltip="Help">
+                  <IconActionHelp />
+                </IconButton>
+                <IconButton tooltip="Info">
+                  <IconActionInfo />
+                </IconButton>
+              </ToolbarGroup>
+            </Toolbar>
 
-                <Toolbar style={{ backgroundColor: 'none' }}>
-                  <ToolbarGroup>
-                    <ToolbarTitle text="Attributen uitgeven" />
-                  </ToolbarGroup>
-                  <ToolbarGroup lastChild>
-                    <IconButton tooltip="Help">
-                      <IconActionHelp />
-                    </IconButton>
-                    <IconButton tooltip="Info">
-                      <IconActionInfo />
-                    </IconButton>
-                  </ToolbarGroup>
-                </Toolbar>
-
-                {(sessionStatus === 'INITIALIZED') && (
-                  <div style={{ padding: '20px' }}>
-                    <Row center="xs">
-                      <Col xs={6}>
-                        Credential(s) type: {credentialType}
-                        <br />
-                      </Col>
-                    </Row>
-                    <Row center="xs">
-                      <Col xs>
-                        <QRCode value={JSON.stringify(qrContent)} size={256} /><br />
-                        <span style={{ display: 'none' }} id="qr-content">{JSON.stringify(qrContent)}</span>
-                        <br />
-                      </Col>
-                    </Row>
-                    <Row center="xs">
-                      <Col xs={6}>
-                        Scan de QR-code met de IRMA app om de credentials te ontvangen.
-                        <br />
-                      </Col>
-                    </Row>
-                  </div>
-                )}
-
-                {(sessionStatus === 'CONNECTED') && (
-                  <div style={{ padding: '20px' }} id="qr-scanned">
-                    <Row center="xs">
-                      <Col xs={6}>
-                        Om verder te gaan, accepteer de credentials in IRMA-app.<br />
-                        <br />
-                      </Col>
-                    </Row>
-                  </div>
-                )}
-
-              </div>
-            )}
-
-            {(sessionStatus === 'DONE' || sessionCompleted === true) && (
-              <div id="issuing-completed">
+            {(sessionStatus === 'INITIALIZED') && (
+              <div style={{ padding: '20px' }}>
+                <Row center="xs">
+                  <Col xs={6}>
+                    Credential(s) type: {credentialType}
+                    <br />
+                  </Col>
+                </Row>
                 <Row center="xs">
                   <Col xs>
-                    <IconActionCheckCircle style={{ width: '100px', height: '100px', color: 'limegreen' }} />
+                    <QRCode value={JSON.stringify(qrContent)} size={256} /><br />
+                    <span style={{ display: 'none' }} id="qr-content">{JSON.stringify(qrContent)}</span>
+                    <br />
                   </Col>
                 </Row>
                 <Row center="xs">
                   <Col xs={6}>
-                    Credentials succesvol uitgegeven!
+                    Scan de QR-code met de IRMA app om de credentials te ontvangen.
+                    <br />
                   </Col>
                 </Row>
               </div>
             )}
 
-            {/* : (
-              <div id="issue-error">
-                <Row center="xs">
-                  <Col xs>
-                    <IconAlertError style={{ width: '100px', height: '100px', color: 'orangered'}}/>
-                  </Col>
-                </Row>
+            {(sessionStatus === 'CONNECTED') && (
+              <div style={{ padding: '20px' }} id="qr-scanned">
                 <Row center="xs">
                   <Col xs={6}>
-                    Er is iets misgegaan!<br/>
-                    <br/>
-                    <RaisedButton label="Retry"
-                      primary={true} style={{}}
-                      onClick={() => this.startIrmaSession()}/>
+                    Om verder te gaan, accepteer de credentials in IRMA-app.<br />
+                    <br />
                   </Col>
                 </Row>
               </div>
-            )} */}
+            )}
 
-            {(sessionStatus === 'CANCELLED' || (sessionStatus === 'NOT_FOUND' && !sessionCompleted)) && (
-              <div>
-                <Toolbar style={{ backgroundColor: 'none' }}>
-                  <ToolbarGroup>
-                    <ToolbarTitle text="Credentials uitgeven geannuleerd" />
-                  </ToolbarGroup>
-                  <ToolbarGroup lastChild>
-                    <IconButton tooltip="Help">
-                      <IconActionHelp />
-                    </IconButton>
-                    <IconButton tooltip="Info">
-                      <IconActionInfo />
-                    </IconButton>
-                  </ToolbarGroup>
-                </Toolbar>
+          </div>
+        )}
 
-                {(sessionStatus === 'CANCELLED') && (
-                  <div style={{ padding: '20px' }} id="issue-cancelled">
-                    <Row center="xs">
-                      <Col xs={6}>
-                        Je hebt het uitgeven van credentials geannuleerd.<br />
-                        <br />
-                        <RaisedButton
-                          label="Retry"
-                          primary
-                          style={{}}
-                          onClick={() => this.startIrmaSession()}
-                        />
-                        <br />
-                      </Col>
-                    </Row>
-                  </div>
-                )}
+        {(sessionStatus === 'DONE' || sessionCompleted === true) && (
+          <div id="issuing-completed">
+            <Row center="xs">
+              <Col xs>
+                <IconActionCheckCircle style={{ width: '100px', height: '100px', color: 'limegreen' }} />
+              </Col>
+            </Row>
+            <Row center="xs">
+              <Col xs={6}>
+                Credentials succesvol uitgegeven!
+              </Col>
+            </Row>
+          </div>
+        )}
 
-                {(sessionStatus === 'NOT_FOUND') && (
-                  <div style={{ padding: '20px' }} id="qr-expired">
-                    <Row center="xs">
-                      <Col xs={6}>
-                        De QR code is verlopen.<br />
-                        <br />
-                        <RaisedButton
-                          label="Retry"
-                          primary
-                          style={{}}
-                          onClick={() => this.startIrmaSession()}
-                        />
-                        <br />
-                      </Col>
-                    </Row>
-                  </div>
-                )}
+        {(sessionStatus === 'FAILED_TO_START') && (
+          <div id="issue-error">
+            <Row center="xs">
+              <Col xs>
+                <IconAlertError style={{ width: '100px', height: '100px', color: 'orangered' }} />
+              </Col>
+            </Row>
+            <Row center="xs">
+              <Col xs={6}>
+                Er is iets misgegaan!<br />
+                <br />
+                <RaisedButton
+                  label="Retry"
+                  primary
+                  onClick={() => this.startIrmaSession()}
+                />
+              </Col>
+            </Row>
+          </div>
+        )}
+
+        {(sessionStatus === 'CANCELLED' || (sessionStatus === 'NOT_FOUND' && !sessionCompleted)) && (
+          <div>
+            <Toolbar style={{ backgroundColor: 'none' }}>
+              <ToolbarGroup>
+                <ToolbarTitle text="Credentials uitgeven geannuleerd" />
+              </ToolbarGroup>
+              <ToolbarGroup lastChild>
+                <IconButton tooltip="Help">
+                  <IconActionHelp />
+                </IconButton>
+                <IconButton tooltip="Info">
+                  <IconActionInfo />
+                </IconButton>
+              </ToolbarGroup>
+            </Toolbar>
+
+            {(sessionStatus === 'CANCELLED') && (
+              <div style={{ padding: '20px' }} id="issue-cancelled">
+                <Row center="xs">
+                  <Col xs={6}>
+                    Je hebt het uitgeven van credentials geannuleerd.<br />
+                    <br />
+                    <RaisedButton
+                      label="Retry"
+                      primary
+                      onClick={() => this.startIrmaSession()}
+                    />
+                    <br />
+                  </Col>
+                </Row>
+              </div>
+            )}
+
+            {(sessionStatus === 'NOT_FOUND') && (
+              <div style={{ padding: '20px' }} id="qr-expired">
+                <Row center="xs">
+                  <Col xs={6}>
+                    De QR code is verlopen.<br />
+                    <br />
+                    <RaisedButton
+                      label="Retry"
+                      primary
+                      onClick={() => this.startIrmaSession()}
+                    />
+                    <br />
+                  </Col>
+                </Row>
               </div>
             )}
           </div>
-        ) : (
+        )}
+
+        {(sessionStatus === null) && (
           <div>
             <Row center="xs">
               <Col xs>

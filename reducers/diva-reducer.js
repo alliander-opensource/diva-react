@@ -1,11 +1,12 @@
 export const types = {
-  START_SESSION: 'IRMA/START_SESSION',
-  SESSION_STARTED: 'IRMA/SESSION_STARTED',
-  CANCEL_SESSION: 'IRMA/CANCEL_SESSION',
-  START_POLLING: 'IRMA/START_POLLING',
-  STOP_POLLING: 'IRMA/STOP_POLLING',
-  PROCESS_POLL_SUCCESS: 'IRMA/PROCESS_POLL_RESULT',
-  PROCESS_POLL_FAILURE: 'IRMA/PROCESS_POLL_FAILURE',
+  START_SESSION: 'DIVA/START_SESSION',
+  SESSION_STARTED: 'DIVA/SESSION_STARTED',
+  SESSION_FAILED_TO_START: 'DIVA/SESSION_FAILED_TO_START',
+  CANCEL_SESSION: 'DIVA/CANCEL_SESSION',
+  START_POLLING: 'DIVA/START_POLLING',
+  STOP_POLLING: 'DIVA/STOP_POLLING',
+  PROCESS_POLL_SUCCESS: 'DIVA/PROCESS_POLL_RESULT',
+  PROCESS_POLL_FAILURE: 'DIVA/PROCESS_POLL_FAILURE',
 };
 
 export const initialState = {
@@ -20,9 +21,14 @@ export const actions = {
     ({ type: types.START_SESSION, irmaSessionType, options }),
   irmaSessionStarted: (irmaSessionId, qrContent) =>
     ({ type: types.SESSION_STARTED, irmaSessionId, qrContent }),
-  cancelIrmaSession: irmaSessionId => ({ type: types.CANCEL_SESSION, irmaSessionId }),
-  startPolling: irmaSessionId => ({ type: types.START_POLLING, irmaSessionId }),
-  stopPolling: irmaSessionId => ({ type: types.STOP_POLLING, irmaSessionId }),
+  irmaSessionFailedToStart: (reason, data) =>
+    ({ type: types.SESSION_FAILED_TO_START, reason, data }),
+  cancelIrmaSession: irmaSessionId =>
+    ({ type: types.CANCEL_SESSION, irmaSessionId }),
+  startPolling: irmaSessionId =>
+    ({ type: types.START_POLLING, irmaSessionId }),
+  stopPolling: irmaSessionId =>
+    ({ type: types.STOP_POLLING, irmaSessionId }),
   processPollSuccess: (irmaSessionId, data) =>
     ({ type: types.PROCESS_POLL_SUCCESS, irmaSessionId, data }),
   processPollFailure: (irmaSessionId, data) =>
@@ -39,6 +45,11 @@ export default (state = initialState, action) => {
         sessionCompleted: false,
         sessionStatus: null,
       };
+    case types.SESSION_FAILED_TO_START:
+      return {
+        ...state,
+        sessionStatus: 'FAILED_TO_START',
+      };
     case types.START_POLLING:
       return {
         ...state,
@@ -54,7 +65,7 @@ export default (state = initialState, action) => {
     case types.PROCESS_POLL_FAILURE:
       return {
         ...state,
-        sessionStatus: 'ERROR',
+        sessionStatus: 'POLLING_FAILED',
       };
     case types.STOP_POLLING:
       return {
