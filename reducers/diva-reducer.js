@@ -42,7 +42,7 @@ export default (state = initialState, action) => {
   switch (action.type) {
     case types.SESSION_STARTED:
       return {
-        ...state,
+        ...initialState,
         irmaSessionId: action.irmaSessionId,
         qrContent: action.qrContent,
         sessionCompleted: false,
@@ -75,8 +75,14 @@ export default (state = initialState, action) => {
       };
     case types.SESSION_COMPLETED:
       return {
+        ...state,
         sessionCompleted: true,
       };
+    case types.CANCEL_SESSION:
+      return {
+        ...initialState,
+      };
+
     default:
       return state;
   }

@@ -22,15 +22,18 @@ function* cancelIrmaSessionSaga(action) {
   yield put(actions.stopPolling(action.irmaSessionId));
 }
 
+function* processPollSuccess(action) {
+  if (['NOT_FOUND', 'DONE', 'CANCELLED'].includes(action.data.serverStatus)) {
+    yield put(actions.irmaSessionCompleted(action.data.serverStatus));
+    yield put(actions.stopPolling(action.irmaSessionId));
+  }
+}
+
 function* pollIrmaSessionSaga(irmaSessionType, irmaSessionId) {
   while (true) {
     try {
       const data = yield call(service.poll, irmaSessionType, irmaSessionId);
       yield put(actions.processPollSuccess(irmaSessionId, data));
-      if (['NOT_FOUND', 'DONE', 'CANCELLED'].includes(data.serverStatus)) {
-        yield put(actions.stopPolling(irmaSessionId));
-        yield put(actions.irmaSessionComplete(data.serverStatus));
-      }
       yield call(delay, 1000);
     } catch (error) {
       yield put(actions.processPollFailure(irmaSessionId, error));
@@ -53,6 +56,7 @@ function* divaSagas() {
   yield all([
     takeEvery(types.START_SESSION, startIrmaSessionSaga),
     takeEvery(types.CANCEL_SESSION, cancelIrmaSessionSaga),
+    takeEvery(types.PROCESS_POLL_SUCCESS, processPollSuccess),
     fork(watchPollSaga),
   ]);
 }

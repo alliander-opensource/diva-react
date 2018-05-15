@@ -17,7 +17,10 @@ import RequestAttributeDisclosureError from './RequestAttributeDisclosureError';
 
 class RequestAttributeDisclosure extends Component {
   componentDidMount() {
-    this.startIrmaSession();
+    // Needed because component might re-mount after completing session
+    if (!this.props.sessionCompleted) {
+      this.startIrmaSession();
+    }
   }
 
   componentWillUnmount() {
