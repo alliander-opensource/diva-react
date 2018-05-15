@@ -9,7 +9,7 @@ function* startIrmaSessionSaga(action) {
     const response = yield call(service.startIrmaSession, action.irmaSessionType, action.options);
     if (response.irmaSessionId && response.qrContent) {
       yield put(actions.irmaSessionStarted(response.irmaSessionId, response.qrContent));
-      yield put(actions.startPolling(response.irmaSessionId));
+      yield put(actions.startPolling(action.irmaSessionType, response.irmaSessionId));
     } else {
       yield put(actions.irmaSessionFailedToStart('Server Error', response));
     }
@@ -22,10 +22,10 @@ function* cancelIrmaSessionSaga(action) {
   yield put(actions.stopPolling(action.irmaSessionId));
 }
 
-function* pollIrmaSessionSaga(irmaSessionId) {
+function* pollIrmaSessionSaga(irmaSessionType, irmaSessionId) {
   while (true) {
     try {
-      const data = yield call(service.poll, irmaSessionId);
+      const data = yield call(service.poll, irmaSessionType, irmaSessionId);
       yield put(actions.processPollSuccess(irmaSessionId, data));
       if (['NOT_FOUND', 'DONE', 'CANCELLED'].includes(data.serverStatus)) {
         yield put(actions.stopPolling(irmaSessionId));
@@ -41,9 +41,9 @@ function* pollIrmaSessionSaga(irmaSessionId) {
 
 export function* watchPollSaga() {
   while (true) {
-    const { irmaSessionId } = yield take(types.START_POLLING);
+    const { irmaSessionType, irmaSessionId } = yield take(types.START_POLLING);
     yield race([
-      call(pollIrmaSessionSaga, irmaSessionId),
+      call(pollIrmaSessionSaga, irmaSessionType, irmaSessionId),
       take(action => action.type === types.STOP_POLLING && action.irmaSessionId === irmaSessionId),
     ]);
   }

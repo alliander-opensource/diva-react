@@ -1,295 +1,46 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import QRCode from 'qrcode.react';
+
 import { Row, Col } from 'react-flexbox-grid';
-import axios from 'axios';
-import RaisedButton from 'material-ui/RaisedButton';
 import CircularProgress from 'material-ui/CircularProgress';
-import IconActionCheckCircle from 'material-ui/svg-icons/action/check-circle';
-import IconActionHelp from 'material-ui/svg-icons/action/help';
-import IconActionInfo from 'material-ui/svg-icons/action/info';
-import IconAlertError from 'material-ui/svg-icons/alert/error';
 
-import IconButton from 'material-ui/IconButton';
-import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar';
+import { actions } from '../../reducers/diva-reducer';
 
-import { requestSession } from '../../../actions';
+import RequestAttributeDisclosureToolbar from './RequestAttributeDisclosureToolbar';
+import RequestAttributeDisclosureInitialized from './RequestAttributeDisclosureInitialized';
+import RequestAttributeDisclosureConnected from './RequestAttributeDisclosureConnected';
+import RequestAttributeDisclosureCancelled from './RequestAttributeDisclosureCancelled';
+import RequestAttributeDisclosureDone from './RequestAttributeDisclosureDone';
+import RequestAttributeDisclosureNotFound from './RequestAttributeDisclosureNotFound';
+import RequestAttributeDisclosureError from './RequestAttributeDisclosureError';
 
 class RequestAttributeDisclosure extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      disclosureStatus: 'PENDING',
-      serverStatus: 'INITIALIZED',
-      sessionStarted: false,
-    };
-  }
-
   componentDidMount() {
-    this._isMounted = true; // eslint-disable-line no-underscore-dangle
-    if (!this.state.sessionStarted) {
-      this.fetchQR();
-    }
+    this.startIrmaSession();
   }
-
-  startPolling = (irmaSessionId) => {
-    const pollTimerId = setInterval(() => this.poll(irmaSessionId), 1000);
-    this.setState({ pollTimerId });
-  }
-
-  stopPolling = () => {
-    if (this.state.pollTimerId) {
-      clearInterval(this.state.pollTimerId);
-      this.setState({ pollTimerId: undefined });
-    }
-  }
-
-  poll(irmaSessionId) {
-    this
-      .getDisclosureStatus(irmaSessionId)
-      .then((result) => {
-        console.log(result); // eslint-disable-line no-console
-        this.setState({
-          disclosureStatus: result.disclosureStatus,
-          serverStatus: result.serverStatus,
-          proofStatus: result.proofStatus,
-        });
-        switch (result.disclosureStatus) {
-          case 'COMPLETED':
-            setTimeout(() => { this.refreshSession(); }, 2000);
-            this.stopPolling();
-            break;
-          case 'ABORTED':
-            this.stopPolling();
-            break;
-          default:
-            break;
-        }
-      });
-  }
-
-  fetchQR = () => {
-    const { requiredAttributes } = this.props;
-    this.setState({
-      disclosureStatus: 'PENDING',
-      serverStatus: 'INITIALIZED',
-      sessionStarted: true,
-    });
-    axios
-      .post('/api/start-irma-session', {
-        type: 'DISCLOSE',
-        content: requiredAttributes
-      }, {
-        withCredentials: true,
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-      })
-      .then(response => response.data)
-      .then(data => {
-        if (this._isMounted) {
-          this.setState({
-            qrContent: data.qrContent,
-          });
-          this.startPolling(data.irmaSessionId);
-        }
-      });
-	}
-
-  getDisclosureStatus(irmaSessionId) {
-    return  axios
-      .get(`/api/disclosure-status?irmaSessionId=${irmaSessionId}`, {
-        withCredentials: true,
-      })
-      .then(response => response.data);
-	}
 
   componentWillUnmount() {
-    this._isMounted = false; // eslint-disable-line no-underscore-dangle
-    this.stopPolling();
+    this.props.cancelIrmaSession(this.props.irmaSessionId);
   }
 
-  refreshSession() {
-    this.props.dispatch(requestSession());
+  startIrmaSession() {
+    this.props.startIrmaSession('DISCLOSE', { attributesRequired: this.props.requiredAttributes });
   }
 
   render() {
-    const { requiredAttributes } = this.props;
     const {
       qrContent,
-      disclosureStatus,
-      proofStatus,
-      serverStatus,
-    } = this.state;
+      requiredAttributes,
+      sessionStatus,
+      sessionCompleted,
+    } = this.props;
 
     return (
       <div>
-        {qrContent ? (
-          <div>
+        <RequestAttributeDisclosureToolbar />
 
-            {(disclosureStatus === 'PENDING') && (
-              <div>
-
-                <Toolbar style={{ backgroundColor: 'none' }}>
-                  <ToolbarGroup>
-                    <ToolbarTitle text="Attribute Required" />
-                  </ToolbarGroup>
-                  <ToolbarGroup lastChild>
-                    <IconButton tooltip="Help">
-                      <IconActionHelp />
-                    </IconButton>
-                    <IconButton tooltip="Info">
-                      <IconActionInfo />
-                    </IconButton>
-                  </ToolbarGroup>
-                </Toolbar>
-
-                {(serverStatus === 'INITIALIZED') && (
-                  <div style={{ padding: '20px' }}>
-                    <Row center="xs">
-                      <Col xs={6}>
-                        In order to view this page, the following attributes are required:<br />
-                        <br />
-                        <b>{requiredAttributes.map(el => el.label).join(', ')}</b><br />
-                        <br />
-                      </Col>
-                    </Row>
-                    <Row center="xs">
-                      <Col xs>
-                        <QRCode value={JSON.stringify(qrContent)} size={256}/><br/>
-                        <span style={{display: 'none'}} id="qr-content">{JSON.stringify(qrContent)}</span>
-                        <br/>
-                      </Col>
-                    </Row>
-                    <Row center="xs">
-                      <Col xs={6}>
-                        Please scan the QR code with your IRMA app to continue.
-                        <br />
-                      </Col>
-                    </Row>
-                  </div>
-                )}
-
-                {(serverStatus === 'CONNECTED') && (
-                  <div style={{ padding: '20px' }} id="qr-scanned">
-                    <Row center="xs">
-                      <Col xs={6}>
-                        To continue, approve attribute disclosure with your IRMA app.<br />
-                        <br />
-                      </Col>
-                    </Row>
-                  </div>
-                )}
-
-              </div>
-            )}
-
-            {(disclosureStatus === 'COMPLETED') && (
-              <div>
-                {(proofStatus === 'VALID') ? (
-                  <div id="disclosure-proof-completed">
-                    <Row center="xs">
-                      <Col xs>
-                        <IconActionCheckCircle style={{
-                          width: '100px',
-                          height: '100px',
-                          color: 'limegreen',
-                        }}
-                        />
-                      </Col>
-                    </Row>
-                    <Row center="xs">
-                      <Col xs={6}>
-                        Attribute disclosure successful!
-                      </Col>
-                    </Row>
-                  </div>
-                ) : (
-                  <div id="disclosure-error">
-                    <Row center="xs">
-                      <Col xs>
-                        <IconAlertError style={{
-                          width: '100px',
-                          height: '100px',
-                          color: 'orangered',
-                        }}
-                        />
-                      </Col>
-                    </Row>
-                    <Row center="xs">
-                      <Col xs={6}>
-                        Oops, something went wrong!<br />
-                        <br />
-                        <RaisedButton
-                          label="Retry"
-                          primary
-                          style={{}}
-                          onClick={() => this.fetchQR()}
-                        />
-                      </Col>
-                    </Row>
-                  </div>
-                )}
-              </div>
-            )}
-            {(disclosureStatus === 'ABORTED') && (
-              <div>
-                <Toolbar style={{ backgroundColor: 'none' }}>
-                  <ToolbarGroup>
-                    <ToolbarTitle text="Disclosure cancelled" />
-                  </ToolbarGroup>
-                  <ToolbarGroup lastChild>
-                    <IconButton tooltip="Help">
-                      <IconActionHelp />
-                    </IconButton>
-                    <IconButton tooltip="Info">
-                      <IconActionInfo />
-                    </IconButton>
-                  </ToolbarGroup>
-                </Toolbar>
-
-                {(serverStatus === 'CANCELLED') && (
-                  <div style={{ padding: '20px' }} id="disclosure-cancelled">
-                    <Row center="xs">
-                      <Col xs={6}>
-                        You cancelled attribute disclosure.<br />
-                        <br />
-                        <RaisedButton
-                          label="Retry"
-                          primary
-                          style={{}}
-                          onClick={() => this.fetchQR()}
-                        />
-                        <br />
-                      </Col>
-                    </Row>
-                  </div>
-                )}
-
-                {(serverStatus === 'NOT_FOUND') && (
-                  <div style={{ padding: '20px' }} id="qr-expired">
-                    <Row center="xs">
-                      <Col xs={6}>
-                        The QR code expired.<br />
-                        <br />
-                        <RaisedButton
-                          label="Retry"
-                          primary
-                          style={{}}
-                          onClick={() => this.fetchQR()}
-                        />
-                        <br />
-                      </Col>
-                    </Row>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        ) : (
+        {(sessionStatus === null) && (
           <div>
             <Row center="xs">
               <Col xs>
@@ -298,14 +49,34 @@ class RequestAttributeDisclosure extends Component {
             </Row>
           </div>
         )}
+
+        {(sessionStatus === 'FAILED_TO_START') && <RequestAttributeDisclosureError onRetry={() => this.startIrmaSession()} /> }
+
+        {(sessionStatus === 'INITIALIZED') && <RequestAttributeDisclosureInitialized requiredAttributes={requiredAttributes} qrContent={qrContent} /> }
+        {(sessionStatus === 'CONNECTED') && <RequestAttributeDisclosureConnected /> }
+        {(sessionStatus === 'DONE' || sessionCompleted === true) && <RequestAttributeDisclosureDone /> }
+        {(sessionStatus === 'CANCELLED') && <RequestAttributeDisclosureCancelled onRetry={() => this.startIrmaSession()} /> }
+        {(sessionStatus === 'NOT_FOUND' && !sessionCompleted) && <RequestAttributeDisclosureNotFound onRetry={() => this.startIrmaSession()} /> }
       </div>
     );
   }
 }
 
 RequestAttributeDisclosure.propTypes = {
-  requiredAttributes: PropTypes.arrayOf(PropTypes.object).isRequired,
-  dispatch: PropTypes.func,
+  requiredAttributes: PropTypes.array.isRequired,
+  startIrmaSession: PropTypes.func.isRequired,
+  cancelIrmaSession: PropTypes.func.isRequired,
+  qrContent: PropTypes.object,
+  irmaSessionId: PropTypes.string,
+  sessionStatus: PropTypes.string,
+  sessionCompleted: PropTypes.bool,
 };
 
-export default withRouter(connect()(RequestAttributeDisclosure));
+const mapStateToProps = state => state.diva;
+
+const mapDispatchToProps = {
+  startIrmaSession: actions.startIrmaSession,
+  cancelIrmaSession: actions.cancelIrmaSession,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(RequestAttributeDisclosure);

@@ -26,8 +26,8 @@ export const actions = {
     ({ type: types.SESSION_FAILED_TO_START, reason, data }),
   cancelIrmaSession: irmaSessionId =>
     ({ type: types.CANCEL_SESSION, irmaSessionId }),
-  startPolling: irmaSessionId =>
-    ({ type: types.START_POLLING, irmaSessionId }),
+  startPolling: (irmaSessionType, irmaSessionId) =>
+    ({ type: types.START_POLLING, irmaSessionType, irmaSessionId }),
   stopPolling: irmaSessionId =>
     ({ type: types.STOP_POLLING, irmaSessionId }),
   processPollSuccess: (irmaSessionId, data) =>
