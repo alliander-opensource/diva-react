@@ -34,8 +34,8 @@ export const actions = {
     ({ type: types.PROCESS_POLL_SUCCESS, irmaSessionId, data }),
   processPollFailure: (irmaSessionId, data) =>
     ({ type: types.PROCESS_POLL_FAILURE, irmaSessionId, data }),
-  irmaSessionCompleted: status =>
-    ({ type: types.SESSION_COMPLETED, status }),
+  irmaSessionCompleted: (serverStatus, proofStatus) =>
+    ({ type: types.SESSION_COMPLETED, serverStatus, proofStatus }),
 };
 
 export default (state = initialState, action) => {
@@ -76,6 +76,7 @@ export default (state = initialState, action) => {
     case types.SESSION_COMPLETED:
       return {
         ...state,
+        proofStatus: action.proofStatus,
         sessionCompleted: true,
       };
     case types.CANCEL_SESSION:

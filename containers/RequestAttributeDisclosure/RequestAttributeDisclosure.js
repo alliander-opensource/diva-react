@@ -36,6 +36,7 @@ class RequestAttributeDisclosure extends Component {
       qrContent,
       requiredAttributes,
       sessionStatus,
+      proofStatus,
       sessionCompleted,
     } = this.props;
 
@@ -57,7 +58,8 @@ class RequestAttributeDisclosure extends Component {
 
         {(sessionStatus === 'INITIALIZED') && <RequestAttributeDisclosureInitialized requiredAttributes={requiredAttributes} qrContent={qrContent} /> }
         {(sessionStatus === 'CONNECTED') && <RequestAttributeDisclosureConnected /> }
-        {(sessionStatus === 'DONE' || sessionCompleted === true) && <RequestAttributeDisclosureDone /> }
+        {((sessionStatus === 'DONE' && proofStatus === 'VALID') || sessionCompleted === true) && <RequestAttributeDisclosureDone /> }
+        {(sessionStatus === 'DONE' && proofStatus !== 'INVALID') && <RequestAttributeDisclosureNotFound onRetry={() => this.startIrmaSession()} /> }
         {(sessionStatus === 'CANCELLED') && <RequestAttributeDisclosureCancelled onRetry={() => this.startIrmaSession()} /> }
         {(sessionStatus === 'NOT_FOUND' && !sessionCompleted) && <RequestAttributeDisclosureNotFound onRetry={() => this.startIrmaSession()} /> }
       </div>
@@ -72,6 +74,7 @@ RequestAttributeDisclosure.propTypes = {
   qrContent: PropTypes.object,
   irmaSessionId: PropTypes.string,
   sessionStatus: PropTypes.string,
+  proofStatus: PropTypes.string,
   sessionCompleted: PropTypes.bool,
 };
 

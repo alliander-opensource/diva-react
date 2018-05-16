@@ -24,7 +24,7 @@ function* cancelIrmaSessionSaga(action) {
 
 function* processPollSuccess(action) {
   if (['NOT_FOUND', 'DONE', 'CANCELLED'].includes(action.data.serverStatus)) {
-    yield put(actions.irmaSessionCompleted(action.data.serverStatus));
+    yield put(actions.irmaSessionCompleted(action.data.serverStatus, action.data.proofStatus));
     yield put(actions.stopPolling(action.irmaSessionId));
   }
 }
