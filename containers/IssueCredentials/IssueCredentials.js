@@ -69,7 +69,7 @@ IssueCredentials.propTypes = {
   credentialType: PropTypes.string.isRequired,
   startIrmaSession: PropTypes.func.isRequired,
   cancelIrmaSession: PropTypes.func.isRequired,
-  qrContent: PropTypes.object,
+  qrContent: PropTypes.objectOf(PropTypes.string),
   irmaSessionId: PropTypes.string,
   sessionStatus: PropTypes.string,
   sessionCompleted: PropTypes.bool,

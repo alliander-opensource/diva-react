@@ -30,8 +30,8 @@ const RequestAttributeDisclosureInitialized = ({ requiredAttributes, qrContent }
 );
 
 RequestAttributeDisclosureInitialized.propTypes = {
-  requiredAttributes: PropTypes.array.isRequired,
-  qrContent: PropTypes.object.isRequired,
+  requiredAttributes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  qrContent: PropTypes.objectOf(PropTypes.string).isRequired,
 };
 
 export default RequestAttributeDisclosureInitialized;

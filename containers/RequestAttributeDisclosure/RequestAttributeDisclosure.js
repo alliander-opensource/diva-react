@@ -68,10 +68,10 @@ class RequestAttributeDisclosure extends Component {
 }
 
 RequestAttributeDisclosure.propTypes = {
-  requiredAttributes: PropTypes.array.isRequired,
+  requiredAttributes: PropTypes.arrayOf(PropTypes.object).isRequired,
   startIrmaSession: PropTypes.func.isRequired,
   cancelIrmaSession: PropTypes.func.isRequired,
-  qrContent: PropTypes.object,
+  qrContent: PropTypes.objectOf(PropTypes.string),
   irmaSessionId: PropTypes.string,
   sessionStatus: PropTypes.string,
   proofStatus: PropTypes.string,
