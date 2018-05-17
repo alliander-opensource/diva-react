@@ -30,6 +30,14 @@ class SignPolicy extends Component {
     }
   }
 
+  getSignatureStatus(irmaSessionId) {
+    return  axios
+      .get(`/api/signature-status?irmaSessionId=${irmaSessionId}`, {
+        withCredentials: true,
+      })
+      .then(response => response.data);
+  }
+
   fetchQR = () => {
     const { requiredAttributes, message } = this.props;
     this.setState({
@@ -96,14 +104,6 @@ class SignPolicy extends Component {
       });
   }
 
-  getSignatureStatus(irmaSessionId) {
-    return  axios
-      .get(`/api/signature-status?irmaSessionId=${irmaSessionId}`, {
-        withCredentials: true,
-      })
-      .then(response => response.data);
-  }
-
   componentWillUnmount() {
     this._isMounted = false;
     this.stopPolling();
@@ -132,10 +132,10 @@ class SignPolicy extends Component {
                   </ToolbarGroup>
                   <ToolbarGroup lastChild={true}>
                     <IconButton tooltip="Help">
-                      <IconActionHelp/>
+                      <IconActionHelp />
                     </IconButton>
                     <IconButton tooltip="Info">
-                      <IconActionInfo/>
+                      <IconActionInfo />
                     </IconButton>
                   </ToolbarGroup>
                 </Toolbar>
@@ -148,20 +148,20 @@ class SignPolicy extends Component {
                         <br />
                         Ondertekenen met: <br />
                         <b>{requiredAttributes.map(el => el.label).join(', ')}</b><br />
-                        <br/>
+                        <br />
                       </Col>
                     </Row>
                     <Row center="xs">
                       <Col xs>
-                        <QRCode value={JSON.stringify(qrContent)} size={256}/><br/>
+                        <QRCode value={JSON.stringify(qrContent)} size={256}/><br />
                         <span style={{display: 'none'}} id="qr-content">{JSON.stringify(qrContent)}</span>
-                        <br/>
+                        <br />
                       </Col>
                     </Row>
                     <Row center="xs">
                       <Col xs={6}>
                         Scan de QR-code met de IRMA app om de toestemming te ondertekenen.
-                        <br/>
+                        <br />
                       </Col>
                     </Row>
                   </div>
@@ -171,8 +171,8 @@ class SignPolicy extends Component {
                   <div style={{ padding: '20px' }} id='qr-scanned'>
                     <Row center="xs">
                       <Col xs={6}>
-                        Om verder te gaan, onderteken het bericht in IRMA-app.<br/>
-                        <br/>
+                        Om verder te gaan, onderteken het bericht in IRMA-app.<br />
+                        <br />
                       </Col>
                     </Row>
                   </div>
@@ -205,11 +205,11 @@ class SignPolicy extends Component {
                     </Row>
                     <Row center="xs">
                       <Col xs={6}>
-                        Er is iets misgegaan!<br/>
-                        <br/>
+                        Er is iets misgegaan!<br />
+                        <br />
                         <RaisedButton label="Retry"
                           primary={true} style={{}}
-                          onClick={() => this.fetchQR()}/>
+                          onClick={() => this.fetchQR()} />
                       </Col>
                     </Row>
                   </div>
@@ -218,30 +218,30 @@ class SignPolicy extends Component {
             )}
             {(signatureStatus === 'ABORTED') && (
               <div>
-              <Toolbar style={{ backgroundColor: 'none' }}>
-                <ToolbarGroup>
-                  <ToolbarTitle text="Toestemming instellen geannuleerd" />
-                </ToolbarGroup>
-                <ToolbarGroup lastChild={true}>
-                  <IconButton tooltip="Help">
-                    <IconActionHelp/>
-                  </IconButton>
-                  <IconButton tooltip="Info">
-                    <IconActionInfo/>
-                  </IconButton>
-                </ToolbarGroup>
-              </Toolbar>
+                <Toolbar style={{ backgroundColor: 'none' }}>
+                  <ToolbarGroup>
+                    <ToolbarTitle text="Toestemming instellen geannuleerd" />
+                  </ToolbarGroup>
+                  <ToolbarGroup lastChild={true}>
+                    <IconButton tooltip="Help">
+                      <IconActionHelp />
+                    </IconButton>
+                    <IconButton tooltip="Info">
+                      <IconActionInfo />
+                    </IconButton>
+                  </ToolbarGroup>
+                </Toolbar>
 
                 {(serverStatus === 'CANCELLED') && (
                   <div style={{ padding: '20px' }} id="signature-cancelled">
                     <Row center="xs">
                       <Col xs={6}>
-                        Je hebt het toestemming instellen geannuleerd.<br/>
-                        <br/>
+                        Je hebt het toestemming instellen geannuleerd.<br />
+                        <br />
                         <RaisedButton label="Retry"
                           primary={true} style={{}}
-                          onClick={() => this.fetchQR()}/>
-                        <br/>
+                          onClick={() => this.fetchQR()} />
+                        <br />
                       </Col>
                     </Row>
                   </div>
@@ -251,12 +251,12 @@ class SignPolicy extends Component {
                   <div style={{ padding: '20px' }} id="qr-expired">
                     <Row center="xs">
                       <Col xs={6}>
-                        De QR code is verlopen.<br/>
-                        <br/>
+                        De QR code is verlopen.<br />
+                        <br />
                         <RaisedButton label="Retry"
                           primary={true} style={{}}
-                          onClick={() => this.fetchQR()}/>
-                        <br/>
+                          onClick={() => this.fetchQR()} />
+                        <br />
                       </Col>
                     </Row>
                   </div>
@@ -268,7 +268,7 @@ class SignPolicy extends Component {
           <div>
             <Row center="xs">
               <Col xs>
-                <CircularProgress/>
+                <CircularProgress />
               </Col>
             </Row>
           </div>
@@ -283,6 +283,6 @@ SignPolicy.propTypes = {
   message: PropTypes.string.isRequired, // TODO: include entire policy
   onComplete: PropTypes.func.isRequired,
   onFailure: PropTypes.func.isRequired,
-}
+};
 
 export default SignPolicy;
