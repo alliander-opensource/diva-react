@@ -7,7 +7,7 @@ const IssueCredentialsInitialized = ({ credentialType, qrContent }) => (
   <div style={{ padding: '20px' }}>
     <Row center="xs">
       <Col xs={6}>
-        Credential(s) type: {credentialType}
+        Credential(s) type: {credentialType}<br />
         <br />
       </Col>
     </Row>

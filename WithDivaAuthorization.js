@@ -8,7 +8,7 @@ import RequestAttributeDisclosure from './containers/RequestAttributeDisclosure/
  * @param {array} requiredAttributes - an array containing required attributes with their label
  * @returns {Component}
  */
-export default function withDivaAuthorization(attributes = {}, requiredAttributes = []) {
+export default function withDivaAuthorization(attributes = {}, requiredAttributes = [], viewId = 'diva-auth') {
   return (WrappedComponent) => {
     class WithAuthorization extends Component {
       hasRequiredAttributes = () => {
@@ -24,7 +24,9 @@ export default function withDivaAuthorization(attributes = {}, requiredAttribute
         if (this.hasRequiredAttributes(attributes, requiredAttributes)) {
           return <WrappedComponent />;
         }
-        return <RequestAttributeDisclosure requiredAttributes={requiredAttributes} />;
+        return (
+          <RequestAttributeDisclosure viewId={viewId} requiredAttributes={requiredAttributes} />
+        );
       }
     }
     return WithAuthorization;

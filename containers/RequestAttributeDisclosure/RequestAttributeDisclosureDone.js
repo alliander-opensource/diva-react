@@ -11,7 +11,7 @@ const RequestAttributeDisclosureDone = () => (
     </Row>
     <Row center="xs">
       <Col xs={6}>
-        Attribute disclosure successful!
+        Attribute disclosure successful!<br />
       </Col>
     </Row>
   </div>

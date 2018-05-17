@@ -14,6 +14,7 @@ export default function withSimpleDivaAuthorization(
   attributes = {},
   requiredAttribute,
   requiredAttributeLabel,
+  viewId = 'simple-diva-auth',
 ) {
   return (WrappedComponent) => {
     class WithSimpleAuthorization extends Component {
@@ -29,7 +30,12 @@ export default function withSimpleDivaAuthorization(
         if (attributes[requiredAttribute]) {
           return <WrappedComponent />;
         }
-        return <RequestAttributeDisclosure requiredAttributes={this.requiredAttributes} />;
+        return (
+          <RequestAttributeDisclosure
+            viewId={viewId}
+            requiredAttributes={this.requiredAttributes}
+          />
+        );
       }
     }
     WithSimpleAuthorization.PropTypes = {
