@@ -21,7 +21,7 @@ const RequestAttributeDisclosureNotFound = ({ onRetry }) => (
 );
 
 RequestAttributeDisclosureNotFound.propTypes = {
-  onRetry: PropTypes.func,
+  onRetry: PropTypes.func.isRequired,
 };
 
 export default RequestAttributeDisclosureNotFound;

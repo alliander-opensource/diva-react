@@ -21,7 +21,7 @@ const RequestAttributeDisclosureCancelled = ({ onRetry }) => (
 );
 
 RequestAttributeDisclosureCancelled.propTypes = {
-  onRetry: PropTypes.func,
+  onRetry: PropTypes.func.isRequired,
 };
 
 export default RequestAttributeDisclosureCancelled;

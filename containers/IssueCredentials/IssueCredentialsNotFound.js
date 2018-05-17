@@ -21,7 +21,7 @@ const IssueCredentialsNotFound = ({ onRetry }) => (
 );
 
 IssueCredentialsNotFound.propTypes = {
-  onRetry: PropTypes.func,
+  onRetry: PropTypes.func.isRequired,
 };
 
 export default IssueCredentialsNotFound;

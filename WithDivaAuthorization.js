@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
 import RequestAttributeDisclosure from './containers/RequestAttributeDisclosure/RequestAttributeDisclosure';
 
@@ -28,10 +27,6 @@ export default function withDivaAuthorization(attributes = {}, requiredAttribute
         return <RequestAttributeDisclosure requiredAttributes={requiredAttributes} />;
       }
     }
-    WithAuthorization.PropTypes = {
-      attributes: PropTypes.object.isRequired,
-      requiredAttributes: PropTypes.array.isRequired,
-    };
     return WithAuthorization;
   };
 }

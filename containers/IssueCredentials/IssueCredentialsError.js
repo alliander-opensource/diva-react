@@ -26,7 +26,7 @@ const IssueCredentialsError = ({ onRetry }) => (
 );
 
 IssueCredentialsError.propTypes = {
-  onRetry: PropTypes.func,
+  onRetry: PropTypes.func.isRequired,
 };
 
 export default IssueCredentialsError;

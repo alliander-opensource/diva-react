@@ -29,7 +29,7 @@ const IssueCredentialsInitialized = ({ credentialType, qrContent }) => (
 
 IssueCredentialsInitialized.propTypes = {
   credentialType: PropTypes.string.isRequired,
-  qrContent: PropTypes.object,
+  qrContent: PropTypes.object.isRequired,
 };
 
 export default IssueCredentialsInitialized;

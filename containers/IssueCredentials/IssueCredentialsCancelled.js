@@ -21,7 +21,7 @@ const IssueCredentialsCancelled = ({ onRetry }) => (
 );
 
 IssueCredentialsCancelled.propTypes = {
-  onRetry: PropTypes.func,
+  onRetry: PropTypes.func.isRequired,
 };
 
 export default IssueCredentialsCancelled;

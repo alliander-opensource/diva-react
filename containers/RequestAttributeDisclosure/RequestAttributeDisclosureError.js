@@ -26,7 +26,7 @@ const RequestAttributeDisclosureError = ({ onRetry }) => (
 );
 
 RequestAttributeDisclosureError.propTypes = {
-  onRetry: PropTypes.func,
+  onRetry: PropTypes.func.isRequired,
 };
 
 export default RequestAttributeDisclosureError;
