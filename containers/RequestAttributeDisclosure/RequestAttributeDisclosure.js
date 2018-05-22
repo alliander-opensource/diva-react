@@ -49,7 +49,7 @@ class RequestAttributeDisclosure extends Component {
             {(divaSession.sessionStatus === 'INITIALIZED') && <RequestAttributeDisclosureInitialized requiredAttributes={requiredAttributes} qrContent={divaSession.qrContent} /> }
             {(divaSession.sessionStatus === 'CONNECTED') && <RequestAttributeDisclosureConnected /> }
             {(divaSession.sessionStatus === 'DONE' && divaSession.proofStatus === 'VALID') && <RequestAttributeDisclosureDone /> }
-            {(divaSession.sessionStatus === 'DONE' && divaSession.proofStatus !== 'INVALID') && <RequestAttributeDisclosureNotFound onRetry={() => this.startIrmaSession()} /> }
+            {(divaSession.sessionStatus === 'DONE' && divaSession.proofStatus !== 'VALID') && <RequestAttributeDisclosureNotFound onRetry={() => this.startIrmaSession()} /> }
             {(divaSession.sessionStatus === 'CANCELLED' || divaSession.sessionStatus === 'ABANDONED') && <RequestAttributeDisclosureCancelled onRetry={() => this.startIrmaSession()} /> }
             {(divaSession.sessionStatus === 'NOT_FOUND') && <RequestAttributeDisclosureNotFound onRetry={() => this.startIrmaSession()} /> }
           </div>

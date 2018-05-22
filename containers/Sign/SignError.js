@@ -5,7 +5,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import IconAlertError from 'material-ui/svg-icons/alert/error';
 
 const RequestAttributeDisclosureError = ({ onRetry }) => (
-  <div id="disclosure-error">
+  <div id="sign-error">
     <Row center="xs">
       <Col xs>
         <IconAlertError style={{ width: '100px', height: '100px', color: 'orangered' }} />

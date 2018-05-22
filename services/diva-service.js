@@ -6,6 +6,7 @@ function startIrmaSession(irmaSessionType, options) {
     .post('/api/start-irma-session', {
       type: irmaSessionType,
       content: options.attributesRequired,
+      message: options.message, // if options.message is undefined, field won't be included in body
       credentialType: options.credentialType,
     }, {
       withCredentials: true,
@@ -30,6 +31,13 @@ function poll(irmaSessionType, irmaSessionId) {
     case 'DISCLOSE':
       return axios
         .get(`/api/disclosure-status?irmaSessionId=${irmaSessionId}`, {
+          withCredentials: true,
+        })
+        .then(response => response.data);
+
+    case 'SIGN':
+      return axios
+        .get(`/api/signature-status?irmaSessionId=${irmaSessionId}`, {
           withCredentials: true,
         })
         .then(response => response.data);
