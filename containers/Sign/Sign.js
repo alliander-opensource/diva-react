@@ -50,7 +50,7 @@ class Sign extends Component {
 
             {(divaSession.sessionStatus === 'INITIALIZED') && <SignInitialized requiredAttributes={requiredAttributes} qrContent={divaSession.qrContent} message={message} /> }
             {(divaSession.sessionStatus === 'CONNECTED') && <SignConnected /> }
-            {(divaSession.sessionStatus === 'DONE' && divaSession.proofStatus === 'VALID') && <SignDone /> }
+            {(divaSession.sessionStatus === 'DONE' && divaSession.proofStatus === 'VALID') && <SignDone attributes={divaSession.signature.attributes} jwt={divaSession.signature.jwt} message={message} /> }
             {(divaSession.sessionStatus === 'DONE' && divaSession.proofStatus !== 'VALID') && <SignNotFound onRetry={() => this.startIrmaSession()} /> }
             {(divaSession.sessionStatus === 'CANCELLED' || divaSession.sessionStatus === 'ABANDONED') && <SignCancelled onRetry={() => this.startIrmaSession()} /> }
             {(divaSession.sessionStatus === 'NOT_FOUND') && <SignNotFound onRetry={() => this.startIrmaSession()} /> }

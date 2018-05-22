@@ -31,8 +31,8 @@ export const actions = {
     ({ type: types.PROCESS_POLL_SUCCESS, viewId, irmaSessionId, data }),
   processPollFailure: (viewId, irmaSessionId, data) =>
     ({ type: types.PROCESS_POLL_FAILURE, viewId, irmaSessionId, data }),
-  irmaSessionCompleted: (viewId, serverStatus, proofStatus) =>
-    ({ type: types.SESSION_COMPLETED, viewId, serverStatus, proofStatus }),
+  irmaSessionCompleted: (viewId, serverStatus, proofStatus, signature) =>
+    ({ type: types.SESSION_COMPLETED, viewId, serverStatus, proofStatus, signature }),
 };
 
 function updateStateForViewIdWith(state, viewId, update) {
@@ -92,6 +92,7 @@ export default (state = initialState, action) => {
     case types.SESSION_COMPLETED:
       return updateStateForViewIdWith(state, action.viewId, {
         proofStatus: action.proofStatus,
+        signature: action.signature,
       });
     case types.ABANDON_SESSION:
       if (state.sessions[action.viewId].sessionStatus !== 'DONE') {

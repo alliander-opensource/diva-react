@@ -31,7 +31,10 @@ function* processPollSuccess(action) {
   if (['NOT_FOUND', 'DONE', 'CANCELLED'].includes(action.data.serverStatus)) {
     yield put(
       actions.irmaSessionCompleted(
-        action.viewId, action.data.serverStatus, action.data.proofStatus,
+        action.viewId,
+        action.data.serverStatus,
+        action.data.proofStatus,
+        { attributes: action.data.attributes, jwt: action.data.jwt },
       ),
     );
     yield put(actions.stopPolling(action.viewId, action.irmaSessionId));
