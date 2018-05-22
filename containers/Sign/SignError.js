@@ -4,7 +4,7 @@ import { Row, Col } from 'react-flexbox-grid';
 import RaisedButton from 'material-ui/RaisedButton';
 import IconAlertError from 'material-ui/svg-icons/alert/error';
 
-const RequestAttributeDisclosureError = ({ onRetry }) => (
+const SignError = ({ onRetry }) => (
   <div id="sign-error">
     <Row center="xs">
       <Col xs>
@@ -25,8 +25,8 @@ const RequestAttributeDisclosureError = ({ onRetry }) => (
   </div>
 );
 
-RequestAttributeDisclosureError.propTypes = {
+SignError.propTypes = {
   onRetry: PropTypes.func.isRequired,
 };
 
-export default RequestAttributeDisclosureError;
+export default SignError;
