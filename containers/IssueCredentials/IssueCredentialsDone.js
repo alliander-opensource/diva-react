@@ -13,7 +13,7 @@ const IssueCredentialsDone = ({ onRetry }) => (
     </Row>
     <Row center="xs">
       <Col xs={6}>
-        Credentials succesvol uitgegeven!<br />
+        Credentials successfully issued!<br />
         <br />
         <RaisedButton
           label="Opnieuw Uitgeven"

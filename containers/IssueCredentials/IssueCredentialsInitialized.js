@@ -20,7 +20,7 @@ const IssueCredentialsInitialized = ({ credentialType, qrContent }) => (
     </Row>
     <Row center="xs">
       <Col xs={6}>
-        Scan de QR-code met de IRMA app om de credentials te ontvangen.
+        Please scan the QR code with your IRMA app to receive the credentials.
         <br />
       </Col>
     </Row>

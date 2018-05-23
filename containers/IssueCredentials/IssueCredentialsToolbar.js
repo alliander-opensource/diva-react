@@ -7,7 +7,7 @@ import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar';
 const IssueCredentialsToolbar = () => (
   <Toolbar style={{ backgroundColor: 'none' }}>
     <ToolbarGroup>
-      <ToolbarTitle text="Attributen uitgeven" />
+      <ToolbarTitle text="Attribute issuance" />
     </ToolbarGroup>
     <ToolbarGroup lastChild>
       <IconButton tooltip="Help">

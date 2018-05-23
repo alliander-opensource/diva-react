@@ -2,11 +2,12 @@ import axios from 'axios';
 
 function startIrmaSession(irmaSessionType, options) {
   // TODO: send options and parse in backend based on type?
+  // only properties that are passed to the service will actually be included in the request
   return axios
     .post('/api/start-irma-session', {
       type: irmaSessionType,
       content: options.attributesRequired,
-      message: options.message, // if options.message is undefined, field won't be included in body
+      message: options.message,
       credentialType: options.credentialType,
     }, {
       withCredentials: true,

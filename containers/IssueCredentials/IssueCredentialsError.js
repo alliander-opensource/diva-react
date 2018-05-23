@@ -13,7 +13,7 @@ const IssueCredentialsError = ({ onRetry }) => (
     </Row>
     <Row center="xs">
       <Col xs={6}>
-        Er is iets misgegaan!<br />
+      Oops, something went wrong!<br />
         <br />
         <RaisedButton
           label="Retry"

@@ -5,7 +5,7 @@ const IssueCredentialsConnected = () => (
   <div style={{ padding: '20px' }} id="qr-scanned">
     <Row center="xs">
       <Col xs={6}>
-        Om verder te gaan, accepteer de credentials in IRMA-app.<br />
+        To continue, accept the credentials in your IRMA app.<br />
         <br />
       </Col>
     </Row>

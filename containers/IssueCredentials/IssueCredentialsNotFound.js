@@ -7,7 +7,7 @@ const IssueCredentialsNotFound = ({ onRetry }) => (
   <div style={{ padding: '20px' }} id="qr-expired">
     <Row center="xs">
       <Col xs={6}>
-        De QR code is verlopen.<br />
+        The QR code expired.<br />
         <br />
         <RaisedButton
           label="Retry"
