@@ -20,32 +20,11 @@ function startIrmaSession(irmaSessionType, options) {
 }
 
 function poll(irmaSessionType, irmaSessionId) {
-  // TODO: a more elegant solution that uses one endpoint
-  switch (irmaSessionType) {
-    case 'ISSUE':
-      return axios
-        .get(`/api/issue-status?irmaSessionId=${irmaSessionId}`, {
-          withCredentials: true,
-        })
-        .then(response => response.data);
-
-    case 'DISCLOSE':
-      return axios
-        .get(`/api/disclosure-status?irmaSessionId=${irmaSessionId}`, {
-          withCredentials: true,
-        })
-        .then(response => response.data);
-
-    case 'SIGN':
-      return axios
-        .get(`/api/signature-status?irmaSessionId=${irmaSessionId}`, {
-          withCredentials: true,
-        })
-        .then(response => response.data);
-
-    default:
-      return Promise.reject('Unkown irmaSessionType');
-  }
+  return axios
+    .get(`/api/irma-session-status?irmaSessionType=${irmaSessionType}&irmaSessionId=${irmaSessionId}`, {
+      withCredentials: true,
+    })
+    .then(response => response.data);
 }
 
 const service = {
