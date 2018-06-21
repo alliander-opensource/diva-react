@@ -7,7 +7,7 @@ const IssueCredentialsCancelled = ({ onRetry }) => (
   <div style={{ padding: '20px' }} id="issue-cancelled">
     <Row center="xs">
       <Col xs={6}>
-        You cancelled credential issuance.<br />
+        Issuance of credentials was cancelled.<br />
         <br />
         <RaisedButton
           label="Retry"
