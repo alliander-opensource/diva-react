@@ -82,7 +82,7 @@ IssueCredentials.propTypes = {
 };
 
 const mapStateToProps = (state, ownProps) =>
-  ({ divaSession: state.diva.sessions[ownProps.viewId] });
+  ({ divaSession: state.divaReducer.sessions[ownProps.viewId] });
 
 const mapDispatchToProps = {
   startIrmaSession: actions.startIrmaSession,
