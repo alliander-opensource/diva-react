@@ -4,10 +4,10 @@ import { take, put, call, race, all, takeEvery, fork } from 'redux-saga/effects'
 import { types, actions } from '../reducers/diva-reducer';
 import service from '../services/diva-service';
 
-function* startIrmaSessionSaga(action) {
+function* startIrmaSessionSaga(baseUrl, action) {
   try {
     const response = yield call(
-      service.startIrmaSession, action.irmaSessionType, action.options,
+      service.startIrmaSession, action.irmaSessionType, action.options, baseUrl,
     );
     if (response.irmaSessionId && response.qrContent) {
       yield put(
@@ -41,10 +41,10 @@ function* processPollSuccess(action) {
   }
 }
 
-function* pollIrmaSessionSaga(viewId, irmaSessionType, irmaSessionId) {
+function* pollIrmaSessionSaga(viewId, irmaSessionType, irmaSessionId, baseUrl) {
   while (true) {
     try {
-      const data = yield call(service.poll, irmaSessionType, irmaSessionId);
+      const data = yield call(service.poll, irmaSessionType, irmaSessionId, baseUrl);
       yield put(actions.processPollSuccess(viewId, irmaSessionId, data));
       yield call(delay, 1000);
     } catch (error) {
@@ -54,22 +54,22 @@ function* pollIrmaSessionSaga(viewId, irmaSessionType, irmaSessionId) {
   }
 }
 
-export function* watchPollSaga() {
+export function* watchPollSaga(baseUrl) {
   while (true) {
     const { viewId, irmaSessionType, irmaSessionId } = yield take(types.START_POLLING);
     yield race([
-      call(pollIrmaSessionSaga, viewId, irmaSessionType, irmaSessionId),
+      call(pollIrmaSessionSaga, viewId, irmaSessionType, irmaSessionId, baseUrl),
       take(action => action.type === types.STOP_POLLING && action.irmaSessionId === irmaSessionId),
     ]);
   }
 }
 
-function* divaSagas() {
+function* divaSagas(baseUrl = '/api') {
   yield all([
-    takeEvery(types.START_SESSION, startIrmaSessionSaga),
+    takeEvery(types.START_SESSION, startIrmaSessionSaga, baseUrl),
     takeEvery(types.ABANDON_SESSION, abandonIrmaSessionSaga),
     takeEvery(types.PROCESS_POLL_SUCCESS, processPollSuccess),
-    fork(watchPollSaga),
+    fork(watchPollSaga, baseUrl),
   ]);
 }
 

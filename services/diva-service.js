@@ -1,8 +1,6 @@
 import axios from 'axios';
 
-const baseUrl = `${window.env.baseUrl}/api`;
-
-function startIrmaSession(irmaSessionType, options) {
+function startIrmaSession(irmaSessionType, options, baseUrl) {
   // TODO: send options and parse in backend based on type?
   // only properties that are passed to the service will actually be included in the request
   return axios
@@ -21,7 +19,7 @@ function startIrmaSession(irmaSessionType, options) {
     .then(response => response.data);
 }
 
-function poll(irmaSessionType, irmaSessionId) {
+function poll(irmaSessionType, irmaSessionId, baseUrl) {
   return axios
     .get(`${baseUrl}/irma-session-status?irmaSessionType=${irmaSessionType}&irmaSessionId=${irmaSessionId}`, {
       withCredentials: true,
