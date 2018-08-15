@@ -199,91 +199,91 @@ See the actions section for corresponding parameters / input to these types.
 - `startIrmaSession`
     - Used to start a new IRMA session, will produce a `START_SESSION` action.
     - It takes the following parameters:
-        - viewId: Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
-        - irmaSessionType: The type of session that will be started, can be: ISSUE, DISCLOSE or SIGN.
+        - `viewId:` Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
+        - `irmaSessionType:` The type of session that will be started, can be: ISSUE, DISCLOSE or SIGN.
             - These types will we matched at the backend.
-        - options: Dictionary with IRMA session specific options, the following options are available:
-            - attributesRequired: List of attributes that need to be disclosed, this is an IRMA Api Server content object, see the (IRMA documentation)[http://credentials.github.io/protocols/irma-protocol/#verification] for details.
-            - message: The message that needs to be signed in case of IRMA signing session. This option is only relevant for IRMA signing sessions.
-            - credentialType: The credential that will be issued, needs to be known in the backend (see above for details.). This option is only relevant for IRMA issuing sessions.
+        - `options:` Dictionary with IRMA session specific options, the following options are available:
+            - `attributesRequired:` List of attributes that need to be disclosed, this is an IRMA Api Server content object, see the (IRMA documentation)[http://credentials.github.io/protocols/irma-protocol/#verification] for details.
+            - `message:` The message that needs to be signed in case of IRMA signing session. This option is only relevant for IRMA signing sessions.
+            - `credentialType:` The credential that will be issued, needs to be known in the backend (see above for details.). This option is only relevant for IRMA issuing sessions.
 - `irmaSessionStarted`
     - Used to denote that an IRMA session has been successfully started.
     - This action will normally only be fired as a result of a `startIrmaSession` action.
     - It takes the following parameters:
-        - viewId: Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
-        - irmaSessionId: The id of the IRMA session at the IRMA Api Server.
-        - qrContent: The content of the QR code that needs to be served at the client.
+        - `viewId:` Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
+        - `irmaSessionId:` The id of the IRMA session at the IRMA Api Server.
+        - `qrContent:` The content of the QR code that needs to be served at the client.
 - `irmaSessionFailedToStart`
     - Failure case: used when an IRMA session cannot be started.
     - This action will normally only be fired as a result of a `startIrmaSession` action.
     - It takes the following parameters:
-        - viewId: Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
-        - reason: Reason of failure
-        - data: Raw http response data of failed call
+        - `viewId:` Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
+        - `reason:` Reason of failure
+        - `data:` Raw http response data of failed call
 - `abandonIrmaSession`
     - Used to stop/cancel a running IRMA session. This can for instance be used to stop a running IRMA session if the user leave the page/clicks on something.
     - This action will normally only be fired if an IRMA session is currently running.
     - It takes the following parameters:
-        - viewId: Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
-        - irmaSessionId: The id of the IRMA session at the IRMA Api Server.
+        - `viewId:` Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
+        - `irmaSessionId:` The id of the IRMA session at the IRMA Api Server.
 - `irmaSessionCompleted`
     - Used when an IRMA session has been successfully finished (there is data disclosed, signed or issued). This can be used to interact in your application on a successful IRMA session.
     - It takes the following parameters:
-        - viewId: Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
-        - serverStatus: Status returned bij the IRMA api server, mainly used internally to stop polling in case of:
+        - `viewId:` Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
+        - `serverStatus:` Status returned bij the IRMA api server, mainly used internally to stop polling in case of:
             - `CANCELLED`: User cancelled on the phone (or doesn't possess the required attributes/forgot his pin/etc.).
             - `DONE`: The IRMA session has been done, a disclosure proof or signature can be retrieved.
             - `NOT_FOUND`: The IRMA session cannot be foun.
             - See for other possible statuses [diva-irma-js](https://github.com/Alliander/diva-irma-js#exposed-functions-1)
-        - proofStatus: The status of the IRMA proof or signature, which can be:
+        - `proofStatus:` The status of the IRMA proof or signature, which can be:
             - `VALID`: The proof is valid
             - `INVALID`: The proof is invalid
             - `EXPIRED`: The proof is valid but the attributes are expired
-        - signature: The IRMA signature. This option is only relevant for IRMA signing sessions.
+        - `signature:` The IRMA signature. This option is only relevant for IRMA signing sessions.
 
 *Internal actions*:
 - `startPolling`
     - Internally used to start polling the backend for an IRMA proof/result.
     - This action will normally only be fired as a result of a `startIrmaSession` action.
     - It takes the following parameters:
-        - viewId: Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
-        - irmaSessionType: The type of session that will be polled, can be: ISSUE, DISCLOSE or SIGN.
-        - irmaSessionId: The id of the IRMA session at the IRMA Api Server.
+        - `viewId:` Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
+        - `irmaSessionType:` The type of session that will be polled, can be: ISSUE, DISCLOSE or SIGN.
+        - `irmaSessionId:` The id of the IRMA session at the IRMA Api Server.
 - `stopPolling`
     - Internally used to start polling the backend for an IRMA proof/result.
     - This action will normally only be fired as a result of a `abandonIrmaSession`, `irmaSessionCompleted` or `processPollFailure` action.
     - It takes the following parameters:
-        - viewId: Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
-        - irmaSessionId: The id of the IRMA session at the IRMA Api Server.
+        - `viewId:` Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
+        - `irmaSessionId:` The id of the IRMA session at the IRMA Api Server.
 - `processPollSuccess` and `processPollFailure`
    - Internally used to process the result of a poll call, either failed or success
     - It takes the following parameters:
-        - viewId: Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
-        - irmaSessionId: The id of the IRMA session at the IRMA Api Server.
-        - data: The raw HTTP response data
+        - `viewId:` Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
+        - `irmaSessionId:` The id of the IRMA session at the IRMA Api Server.
+        - `data:` The raw HTTP response data
 
-## React Commponents
+## React Components
 
 All components need to be bound to a Redux store that contains the reducer/saga that are described here. In addition, some additional properties can be passed to them, as described here:
 
 - `IssueCredentials` - Used for issuing credentials.
-    - viewId: Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
-    - credentialType: Type of credential that will be issued, see issuing section for example.
+    - `viewId:` Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
+    - `credentialType:` Type of credential that will be issued, see issuing section for example.
 - `Sign` - Used for signing messages.
-    - viewId: Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
-    - message: The message that will be signed by the user
-    - requiredAttributes: contains the list of required attributes in the signature, which is defined as 'a set of conjunctions containing disjunctions', a concept that is explained [at the IRMA webpage](http://credentials.github.io/protocols/irma-protocol/#verification)
+    - `viewId:` Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
+    - `message:` The message that will be signed by the user
+    - `requiredAttributes:` contains the list of required attributes in the signature, which is defined as 'a set of conjunctions containing disjunctions', a concept that is explained [at the IRMA webpage](http://credentials.github.io/protocols/irma-protocol/#verification)
 
 For disclosure, two high-order components are available, which will show a QR code if attributes aren't disclosed yet, or show the underlying component if attributes are already disclosed:
 - `WithDivaAuthorization` - Default version
-    - viewId: Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
-    - attributes: A dictionary with attributes that are already disclosed. The key is the attribute identifier (for instance `pbdf.pbdf.email.email` for an e-mail attribute issued by the Privacy By Design foundation). The value is the value of the attribute of the user.
-    - requiredAttributes: A list of attributes that need to be disclosed. This list is an IRMA API Server content object, see the (IRMA documentation)[http://credentials.github.io/protocols/irma-protocol/#verification] for details.
+    - `viewId:` Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
+    - `attributes:` A dictionary with attributes that are already disclosed. The key is the attribute identifier (for instance `pbdf.pbdf.email.email` for an e-mail attribute issued by the Privacy By Design foundation). The value is the value of the attribute of the user.
+    - `requiredAttributes:` A list of attributes that need to be disclosed. This list is an IRMA API Server content object, see the (IRMA documentation)[http://credentials.github.io/protocols/irma-protocol/#verification] for details.
 - `WithSimpleDivaAuthorization` - Simplified version that can only request disclosure of one attribute
-    - viewId: Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
-    - attributes: A dictionary with attributes that are already disclosed. The key is the attribute identifier (for instance `pbdf.pbdf.email.email` for an e-mail attribute issued by the Privacy By Design foundation). The value is the value of the attribute of the user.
-    - requiredAttribute: The identifier of attribute that needs to be disclose.
-    - requiredAttributeLabel: The label shown to the user when requesting this attribute.
+    - `viewId:` Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
+    - `attributes:` A dictionary with attributes that are already disclosed. The key is the attribute identifier (for instance `pbdf.pbdf.email.email` for an e-mail attribute issued by the Privacy By Design foundation). The value is the value of the attribute of the user.
+    - `requiredAttribute:` The identifier of attribute that needs to be disclose.
+    - `requiredAttributeLabel:` The label shown to the user when requesting this attribute.
 
 ## IRMA
 
