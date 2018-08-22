@@ -1,6 +1,6 @@
 # diva-react
 
-This repository contains a library that can be used with the DIVA backend SDK [diva-irma-js](https://github.com/Alliander/diva-irma-js) to easily integrate [IRMA attributes](https://privacybydesign.foundation/irma-verifier/) into NodeJS based applications.
+This repository contains a library that can be used with the DIVA backend SDK [diva-irma-js](https://github.com/Alliander/diva-irma-js) to easily integrate [IRMA attributes](https://privacybydesign.foundation/irma-verifier/) into React based applications.
 
 See [diva-js-reference-3p-frontend](https://github.com/Alliander/diva-js-reference-3p-frontend) for an example implementation of this library that also makes use of [diva-js-reference-3p-backend](https://github.com/Alliander/diva-js-reference-3p-backend) as an example backend with [diva-irma-js](https://github.com/Alliander/diva-irma-js).
 
