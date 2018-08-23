@@ -1,11 +1,10 @@
 {
   "name": "diva-react",
   "version": "1.0.0",
-  "description": "A frontend libary that can be used to verify IRMA attributes.",
-  "private": true,
+  "description": "A frontend libary that can be used to verify, issue and sign with IRMA attributes.",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/Alliander/diva-react.git"
+    "url": "https://github.com/Alliander/diva-react"
   },
   "dependencies": {
     "axios": "0.17.0",
