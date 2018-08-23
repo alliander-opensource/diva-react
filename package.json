@@ -9,11 +9,8 @@
   },
   "dependencies": {
     "axios": "0.17.0",
-    "material-ui": "0.19.4",
     "qrcode.react": "0.7.2",
-    "react-flexbox-grid": "1.1.5",
-    "react-redux": "5.0.6",
-    "redux-saga": "0.16.0"
+    "react-flexbox-grid": "1.1.5"
   },
   "files": [
     "dist",
@@ -56,6 +53,9 @@
   },
   "peerDependencies": {
     "react": "16.4.2",
-    "react-dom": "16.4.2"
+    "react-dom": "16.4.2",
+    "react-redux": "5.0.6",
+    "redux-saga": "0.16.0",
+    "material-ui": "0.19.4"
   }
 }
