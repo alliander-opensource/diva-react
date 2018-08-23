@@ -1,6 +1,6 @@
 {
   "name": "diva-react",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A frontend libary that can be used to verify, issue and sign with IRMA attributes.",
   "repository": {
     "type": "git",
@@ -13,7 +13,8 @@
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "src"
   ],
   "main": "./dist/index.js",
   "module": "./dist/index.js",
