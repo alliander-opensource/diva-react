@@ -57,7 +57,6 @@ export default (state = initialState, action) => {
           ...state.sessions,
           [action.viewId]: {
             irmaSessionType: action.irmaSessionType,
-            isPolling: false,
             sessionStatus: 'REQUESTED',
             started: true,
           },
@@ -73,10 +72,6 @@ export default (state = initialState, action) => {
       return updateStateForViewIdWith(state, action.viewId, {
         sessionStatus: 'FAILED_TO_START',
       });
-    case types.START_POLLING:
-      return updateStateForViewIdWith(state, action.viewId, {
-        isPolling: true,
-      });
     case types.PROCESS_POLL_SUCCESS:
       return updateStateForViewIdWith(state, action.viewId, {
         sessionStatus: action.data.serverStatus,
@@ -90,9 +85,7 @@ export default (state = initialState, action) => {
         ...state,
         sessions: {
           ...state.sessions,
-          [action.viewId]: {
-            isPolling: false,
-          },
+          [action.viewId]: {},
         },
       };
     case types.SESSION_COMPLETED:

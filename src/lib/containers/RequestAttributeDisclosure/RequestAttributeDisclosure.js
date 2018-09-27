@@ -19,7 +19,8 @@ class RequestAttributeDisclosure extends Component {
   componentDidMount() {
     // TODO: this can be refactored out of here if
     // it becomes something like startOrResumeDivaSession(viewId)
-    if (!this.props.divaSession || this.props.divaSession.sessionStatus === 'ABANDONED') {
+    // TODO: check properly for divaSession
+    if (!this.props.divaSession || Object.keys(this.props.divaSession).length === 0 || this.props.divaSession.sessionStatus === 'ABANDONED') {
       this.startIrmaSession();
     }
   }
