@@ -86,9 +86,15 @@ export default (state = initialState, action) => {
         sessionStatus: 'POLLING_FAILED',
       });
     case types.STOP_POLLING:
-      return updateStateForViewIdWith(state, action.viewId, {
-        isPolling: false,
-      });
+      return {
+        ...state,
+        sessions: {
+          ...state.sessions,
+          [action.viewId]: {
+            isPolling: false,
+          },
+        },
+      };
     case types.SESSION_COMPLETED:
       return updateStateForViewIdWith(state, action.viewId, {
         proofStatus: action.proofStatus,
