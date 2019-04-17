@@ -30,12 +30,12 @@ class IssueCredentials extends Component {
   }
 
   startIrmaSession() {
-    this.props.startIrmaSession(this.props.viewId, 'ISSUE', { credentialType: this.props.credentialType });
+    this.props.startIrmaSession(this.props.viewId, 'issuing', undefined, undefined, this.props.credentials); // TODO: other function call instead of empty params?
   }
 
   render() {
     const {
-      credentialType,
+      credentials,
       divaSession,
     } = this.props;
 
@@ -47,7 +47,7 @@ class IssueCredentials extends Component {
           <div>
             {(divaSession.sessionStatus === 'FAILED_TO_START') && <IssueCredentialsError onRetry={() => this.startIrmaSession()} /> }
 
-            {(divaSession.sessionStatus === 'INITIALIZED') && <IssueCredentialsInitialized credentialType={credentialType} qrContent={divaSession.qrContent} /> }
+            {(divaSession.sessionStatus === 'INITIALIZED') && <IssueCredentialsInitialized credentials={credentials.map(el => el.credential)} qrContent={divaSession.qrContent} /> }
             {(divaSession.sessionStatus === 'CONNECTED') && <IssueCredentialsConnected /> }
             {(divaSession.sessionStatus === 'DONE') && <IssueCredentialsDone onRetry={() => this.startIrmaSession()} /> }
             {(divaSession.sessionStatus === 'CANCELLED' || divaSession.sessionStatus === 'ABANDONED') && <IssueCredentialsCancelled onRetry={() => this.startIrmaSession()} /> }
@@ -69,7 +69,7 @@ class IssueCredentials extends Component {
 
 IssueCredentials.propTypes = {
   viewId: PropTypes.string.isRequired,
-  credentialType: PropTypes.string.isRequired,
+  credentials: PropTypes.arrayOf(PropTypes.object).isRequired,
   startIrmaSession: PropTypes.func.isRequired,
   abandonIrmaSession: PropTypes.func.isRequired,
   divaSession: PropTypes.shape({

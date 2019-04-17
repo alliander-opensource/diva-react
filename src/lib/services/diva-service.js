@@ -1,29 +1,19 @@
 import axios from 'axios';
 
-function startIrmaSession(irmaSessionType, options, baseUrl) {
-  // TODO: send options and parse in backend based on type?
-  // only properties that are passed to the service will actually be included in the request
+function startIrmaSession(irmaUrl, type, content, message, credentials) {
   return axios
-    .post(`${baseUrl}/start-irma-session`, {
-      type: irmaSessionType,
-      content: options.attributesRequired,
-      message: options.message,
-      credentialType: options.credentialType,
-    }, {
-      withCredentials: true,
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+    .post(`${irmaUrl}/session`, {
+      type,
+      content,
+      credentials,
+      message,
     })
     .then(response => response.data);
 }
 
-function poll(irmaSessionType, irmaSessionId, baseUrl) {
+function poll(server, token) {
   return axios
-    .get(`${baseUrl}/irma-session-status?irmaSessionType=${irmaSessionType}&irmaSessionId=${irmaSessionId}`, {
-      withCredentials: true,
-    })
+    .get(`${server}/session/${token}/result`)
     .then(response => response.data);
 }
 

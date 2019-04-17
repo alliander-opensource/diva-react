@@ -2,6 +2,11 @@ import React, { Component } from 'react';
 
 import RequestAttributeDisclosure from './containers/RequestAttributeDisclosure/RequestAttributeDisclosure';
 
+
+function extractAttributeIds(attributes) {
+  return attributes.map(el => el.id);
+}
+
 /**
  * React middleware function that renders based on available and required attributes.
  * @param {object} attributes - a key value object containing available attributes
@@ -12,7 +17,7 @@ export default function withDivaAuthorization(attributes = {}, requiredAttribute
   return (WrappedComponent) => {
     class WithAuthorization extends Component {
       hasRequiredAttributes = () => {
-        const existingAttributes = Object.keys(attributes);
+        const existingAttributes = extractAttributeIds(attributes);
         return requiredAttributes.reduce(
           (accumulator, requiredAttribute) =>
             accumulator && requiredAttribute.attributes.some(el => existingAttributes.includes(el)),

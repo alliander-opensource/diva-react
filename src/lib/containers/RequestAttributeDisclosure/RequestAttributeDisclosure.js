@@ -30,7 +30,7 @@ class RequestAttributeDisclosure extends Component {
   }
 
   startIrmaSession() {
-    this.props.startIrmaSession(this.props.viewId, 'DISCLOSE', { attributesRequired: this.props.requiredAttributes });
+    this.props.startIrmaSession(this.props.viewId, 'disclosing', this.props.requiredAttributes);
   }
 
   render() {

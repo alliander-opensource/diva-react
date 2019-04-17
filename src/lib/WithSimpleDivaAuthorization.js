@@ -1,7 +1,4 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-
-import RequestAttributeDisclosure from './containers/RequestAttributeDisclosure/RequestAttributeDisclosure';
+import withDivaAuthorization from './WithDivaAuthorization';
 
 /**
  * React middleware function that renders based on available and required attribute.
@@ -17,32 +14,10 @@ export default function withSimpleDivaAuthorization(
   viewId = 'simple-diva-auth',
 ) {
   return (WrappedComponent) => {
-    class WithSimpleAuthorization extends Component {
-      constructor(props) {
-        super(props);
-        this.requiredAttributes = [{
-          label: requiredAttributeLabel || requiredAttribute,
-          attributes: [requiredAttribute],
-        }];
-      }
-
-      render() {
-        if (attributes[requiredAttribute]) {
-          return <WrappedComponent />;
-        }
-        return (
-          <RequestAttributeDisclosure
-            viewId={viewId}
-            requiredAttributes={this.requiredAttributes}
-          />
-        );
-      }
-    }
-    WithSimpleAuthorization.PropTypes = {
-      attributes: PropTypes.object.isRequired,
-      requiredAttribute: PropTypes.string.isRequired,
-      requiredAttributeLabel: PropTypes.string,
-    };
-    return WithSimpleAuthorization;
+    const requiredAttributes = [{
+      label: requiredAttributeLabel || requiredAttribute,
+      attributes: [requiredAttribute],
+    }];
+    return withDivaAuthorization(attributes, requiredAttributes, viewId)(WrappedComponent);
   };
 }

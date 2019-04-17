@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import QRCode from 'qrcode.react';
 import { Row, Col } from 'react-flexbox-grid';
 
-const IssueCredentialsInitialized = ({ credentialType, qrContent }) => (
+const IssueCredentialsInitialized = ({ credentials, qrContent }) => (
   <div style={{ padding: '20px' }}>
     <Row center="xs">
       <Col xs={6}>
-        Credential(s) type: {credentialType}<br />
+        Credential(s) type: {JSON.stringify(credentials)}<br />
         <br />
       </Col>
     </Row>
@@ -28,7 +28,7 @@ const IssueCredentialsInitialized = ({ credentialType, qrContent }) => (
 );
 
 IssueCredentialsInitialized.propTypes = {
-  credentialType: PropTypes.string.isRequired,
+  credentials: PropTypes.arrayOf(PropTypes.string).isRequired,
   qrContent: PropTypes.objectOf(PropTypes.string).isRequired,
 };
 

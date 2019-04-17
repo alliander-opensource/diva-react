@@ -1,3 +1,11 @@
+# Note new IRMA server:
+
+The version in this branch had been refactored to support the new IRMA protocol. With this change, Diva doesn't require a backend anymore. Specify the URL to your IRMA server in `src/sagas/index.js` and run it with the new-irma branch of diva-js-reference-3p-frontend.
+
+Notable absent features:
+- No session support (still uncertain whether we will add that again)
+- No Authenticated IRMA JWT issue/disclose support (will be implemented)
+
 # diva-react
 
 This repository contains a library that can be used with the DIVA backend SDK [diva-irma-js](https://github.com/Alliander/diva-irma-js) to easily integrate [IRMA attributes](https://privacybydesign.foundation/irma-verifier/) into React based applications.

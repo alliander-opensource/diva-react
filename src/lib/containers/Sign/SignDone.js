@@ -15,10 +15,10 @@ class SignDone extends Component {
   renderAttributes = () => {
     const { attributes } = this.props;
 
-    const rows = Object.keys(attributes).map(el => (
-      <TableRow key={el}>
-        <TableRowColumn>{el}</TableRowColumn>
-        <TableRowColumn>{attributes[el]}</TableRowColumn>
+    const rows = attributes.map(el => (
+      <TableRow key={el.rawvalue + el.id}>
+        <TableRowColumn>{el.rawvalue}</TableRowColumn>
+        <TableRowColumn>{el.id}</TableRowColumn>
       </TableRow>
     ));
 
@@ -55,12 +55,7 @@ class SignDone extends Component {
             With the following attributes:
             {this.renderAttributes()}
             <br />
-            <a
-              href={`https://jwt.io/#debugger-io?token=${this.props.jwt}`}
-              target="_blank"
-            >
-              Click here to show the signature in jwt.io
-            </a>
+            {JSON.stringify(this.props.signature)}
           </Col>
         </Row>
       </div>
@@ -69,8 +64,8 @@ class SignDone extends Component {
 }
 
 SignDone.propTypes = {
-  attributes: PropTypes.objectOf(PropTypes.string).isRequired,
-  jwt: PropTypes.string.isRequired,
+  attributes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  signature: PropTypes.arrayOf(PropTypes.object).isRequired,
   message: PropTypes.string.isRequired,
 };
 
