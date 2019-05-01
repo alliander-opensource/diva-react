@@ -1,4 +1,5 @@
 import axios from 'axios';
+import jwt from 'jsonwebtoken';
 
 function startIrmaSession(irmaUrl, type, content, message, credentials) {
   return axios
@@ -11,10 +12,32 @@ function startIrmaSession(irmaUrl, type, content, message, credentials) {
     .then(response => response.data);
 }
 
-function poll(server, token) {
+function pollJwt(token, irmaUrl, jwtPublicKey) {
   return axios
-    .get(`${server}/session/${token}/result`)
+    .get(`${irmaUrl}/session/${token}/result-jwt`)
+    .then(response => response.data)
+    .then((jwtToken) => {
+      const jwtBody = jwt.verify(jwtToken, jwtPublicKey); // TODO: check audience!
+
+      return {
+        ...jwtBody,
+        jwt: jwtToken,
+      };
+    });
+}
+
+function pollPlain(token, irmaUrl) {
+  return axios
+    .get(`${irmaUrl}/session/${token}/result`)
     .then(response => response.data);
+}
+
+function poll(token, irmaUrl, jwtEnabled, jwtPublicKey) {
+  if (jwtEnabled) {
+    return pollJwt(token, irmaUrl, jwtPublicKey);
+  }
+
+  return pollPlain(token, irmaUrl);
 }
 
 const service = {

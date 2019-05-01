@@ -4,11 +4,17 @@ import { take, put, call, race, all, takeEvery, fork } from 'redux-saga/effects'
 import { types, actions } from '../reducers/diva-reducer';
 import service from '../services/diva-service';
 
-function* startIrmaSessionSaga(irmaUrl, action) {
+let irmaConfig = {
+  irmaUrl: 'https://FILL_IN', // TODO, default IRMA server?
+  jwtEnabled: false,
+  jwtPublicKey: 'FILL_IN',
+};
+
+function* startIrmaSessionSaga(action) {
   try {
     const response = yield call(
       service.startIrmaSession,
-      irmaUrl,
+      irmaConfig.irmaUrl,
       action.irmaSessionType, action.content, action.message, action.credentials,
     );
     if (response.sessionPtr && response.token) {
@@ -40,6 +46,7 @@ function* processPollSuccess(action) {
           action.data.proofStatus,
           action.data.disclosed,
           action.data.signature,
+          action.data.jwt,
         ),
       );
     } else {
@@ -49,6 +56,7 @@ function* processPollSuccess(action) {
           action.data.status,
           action.data.proofStatus,
           action.data.disclosed,
+          action.data.jwt,
         ),
       );
     }
@@ -56,10 +64,11 @@ function* processPollSuccess(action) {
   }
 }
 
-function* pollIrmaSessionSaga(viewId, irmaSessionType, irmaSessionId, qrContent, baseUrl) {
+function* pollIrmaSessionSaga(viewId, irmaSessionType, irmaSessionId) {
   while (true) {
     try {
-      const data = yield call(service.poll, baseUrl, irmaSessionId);
+      const { irmaUrl, jwtEnabled, jwtPublicKey } = irmaConfig;
+      const data = yield call(service.poll, irmaSessionId, irmaUrl, jwtEnabled, jwtPublicKey);
       yield put(actions.processPollSuccess(viewId, irmaSessionType, irmaSessionId, data));
       yield call(delay, 1000);
     } catch (error) {
@@ -69,22 +78,27 @@ function* pollIrmaSessionSaga(viewId, irmaSessionType, irmaSessionId, qrContent,
   }
 }
 
-export function* watchPollSaga(baseUrl) {
+export function* watchPollSaga() {
   while (true) {
-    const { viewId, irmaSessionType, irmaSessionId, qrContent } = yield take(types.START_POLLING);
+    const { viewId, irmaSessionType, irmaSessionId } = yield take(types.START_POLLING);
     yield race([
-      call(pollIrmaSessionSaga, viewId, irmaSessionType, irmaSessionId, qrContent, baseUrl),
+      call(pollIrmaSessionSaga, viewId, irmaSessionType, irmaSessionId),
       take(action => action.type === types.STOP_POLLING && action.irmaSessionId === irmaSessionId),
     ]);
   }
 }
 
-function* divaSagas(baseUrl = '/api') {
+function* divaSagas(passedIrmaConfig) {
+  if (passedIrmaConfig !== undefined) {
+    // TODO: config validation?
+    irmaConfig = passedIrmaConfig;
+  }
+
   yield all([
-    takeEvery(types.START_SESSION, startIrmaSessionSaga, baseUrl),
+    takeEvery(types.START_SESSION, startIrmaSessionSaga),
     takeEvery(types.ABANDON_SESSION, abandonIrmaSessionSaga),
     takeEvery(types.PROCESS_POLL_SUCCESS, processPollSuccess),
-    fork(watchPollSaga, baseUrl),
+    fork(watchPollSaga),
   ]);
 }
 

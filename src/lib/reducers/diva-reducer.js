@@ -36,9 +36,11 @@ export const actions = {
     ({ type: types.PROCESS_POLL_SUCCESS, viewId, irmaSessionType, irmaSessionId, data }),
   processPollFailure: (viewId, irmaSessionId, data) =>
     ({ type: types.PROCESS_POLL_FAILURE, viewId, irmaSessionId, data }),
-  discloseSessionCompleted: (viewId, status, proofStatus, disclosedAttributes) =>
-    ({ type: types.DISCLOSE_SESSION_COMPLETED, viewId, status, proofStatus, disclosedAttributes }),
-  signatureSessionCompleted: (viewId, status, proofStatus, disclosedAttributes, signature) =>
+  discloseSessionCompleted: (viewId, status, proofStatus, disclosedAttributes, jwt) =>
+    ({
+      type: types.DISCLOSE_SESSION_COMPLETED, viewId, status, proofStatus, disclosedAttributes, jwt,
+    }),
+  signatureSessionCompleted: (viewId, status, proofStatus, disclosedAttributes, signature, jwt) =>
     ({
       type: types.SIGNATURE_SESSION_COMPLETED,
       viewId,
@@ -46,6 +48,7 @@ export const actions = {
       proofStatus,
       disclosedAttributes,
       signature,
+      jwt,
     }),
 };
 
@@ -118,6 +121,7 @@ export default (state = initialState, action) => {
     case types.DISCLOSE_SESSION_COMPLETED: {
       const newState = updateStateForViewIdWith(state, action.viewId, {
         proofStatus: action.proofStatus,
+        jwt: action.jwt,
       });
       const disclosedAttributes =
         (action.disclosedAttributes !== undefined) ? action.disclosedAttributes : [];
@@ -130,6 +134,7 @@ export default (state = initialState, action) => {
     case types.SIGNATURE_SESSION_COMPLETED:
       return updateStateForViewIdWith(state, action.viewId, {
         proofStatus: action.proofStatus,
+        jwt: action.jwt,
         disclosedAttributes: action.disclosedAttributes
           .filter(el => el.status !== 'EXTRA'), // TMP hack, see comment above in containsAttribute()
         signature: action.signature,

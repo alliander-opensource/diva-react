@@ -55,7 +55,18 @@ class SignDone extends Component {
             With the following attributes:
             {this.renderAttributes()}
             <br />
-            {JSON.stringify(this.props.signature)}
+            {this.props.jwt // Show link to jwt.io if jwt was enabled, else display raw signature
+              ? (
+                <a
+                  href={`https://jwt.io/#debugger-io?token=${this.props.jwt}`}
+                  target="_blank"
+                >
+                  Click here to show the signature in jwt.io
+                </a>
+              ) : (
+                JSON.stringify(this.props.signature)
+              )
+            }
           </Col>
         </Row>
       </div>
@@ -65,8 +76,9 @@ class SignDone extends Component {
 
 SignDone.propTypes = {
   attributes: PropTypes.arrayOf(PropTypes.object).isRequired,
-  signature: PropTypes.arrayOf(PropTypes.object).isRequired,
+  signature: PropTypes.arrayOf(PropTypes.object),
   message: PropTypes.string.isRequired,
+  jwt: PropTypes.string,
 };
 
 export default SignDone;
