@@ -1,22 +1,19 @@
 import React from 'react';
-import IconButton from 'material-ui/IconButton';
-import IconActionHelp from 'material-ui/svg-icons/action/help';
-import IconActionInfo from 'material-ui/svg-icons/action/info';
-import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar';
+import IconButton from '@material-ui/core/IconButton';
+import IconActionHelp from '@material-ui/icons/Help';
+import IconActionInfo from '@material-ui/icons/Info';
+import Typography from '@material-ui/core/Typography';
+import Toolbar from '@material-ui/core/Toolbar';
 
 const IssueCredentialsToolbar = () => (
   <Toolbar style={{ backgroundColor: 'none' }}>
-    <ToolbarGroup>
-      <ToolbarTitle text="Attribute issuance" />
-    </ToolbarGroup>
-    <ToolbarGroup lastChild>
-      <IconButton tooltip="Help">
-        <IconActionHelp />
-      </IconButton>
-      <IconButton tooltip="Info">
-        <IconActionInfo />
-      </IconButton>
-    </ToolbarGroup>
+    <Typography style={{ flexGrow: 1 }}>Attribute issuance</Typography>
+    <IconButton tooltip="Help">
+      <IconActionHelp />
+    </IconButton>
+    <IconButton tooltip="Info">
+      <IconActionInfo />
+    </IconButton>
   </Toolbar>
 );
 

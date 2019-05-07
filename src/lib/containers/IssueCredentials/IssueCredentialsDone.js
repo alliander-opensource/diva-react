@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Row, Col } from 'react-flexbox-grid';
-import IconActionCheckCircle from 'material-ui/svg-icons/action/check-circle';
-import RaisedButton from 'material-ui/RaisedButton';
+import IconActionCheckCircle from '@material-ui/icons/CheckCircle';
+import Button from '@material-ui/core/Button';
 
 const IssueCredentialsDone = ({ onRetry }) => (
   <div id="issuing-completed">
@@ -15,11 +15,7 @@ const IssueCredentialsDone = ({ onRetry }) => (
       <Col xs={6}>
         Credentials successfully issued!<br />
         <br />
-        <RaisedButton
-          label="Opnieuw Uitgeven"
-          primary
-          onClick={onRetry}
-        /><br />
+        <Button onClick={onRetry} color="primary" variant="contained">Opnieuw Uitgeven</Button><br />
         <br />
       </Col>
     </Row>

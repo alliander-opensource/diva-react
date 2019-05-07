@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Row, Col } from 'react-flexbox-grid';
-import IconActionCheckCircle from 'material-ui/svg-icons/action/check-circle';
-import {
-  Table,
-  TableBody,
-  TableHeader,
-  TableHeaderColumn,
-  TableRow,
-  TableRowColumn,
-} from 'material-ui/Table';
+
+import IconActionCheckCircle from '@material-ui/icons/CheckCircle';
+
+import Table from '@material-ui/core/Table';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableBody from '@material-ui/core/TableBody';
+import TableRow from '@material-ui/core/TableRow';
 
 class SignDone extends Component {
   renderAttributes = () => {
@@ -17,20 +16,20 @@ class SignDone extends Component {
 
     const rows = attributes.map(el => (
       <TableRow key={el.rawvalue + el.id}>
-        <TableRowColumn>{el.rawvalue}</TableRowColumn>
-        <TableRowColumn>{el.id}</TableRowColumn>
+        <TableCell>{el.rawvalue}</TableCell>
+        <TableCell>{el.id}</TableCell>
       </TableRow>
     ));
 
     return (
-      <Table selectable={false} >
-        <TableHeader displaySelectAll={false} >
+      <Table>
+        <TableHead>
           <TableRow>
-            <TableHeaderColumn>Name:</TableHeaderColumn>
-            <TableHeaderColumn>Value:</TableHeaderColumn>
+            <TableCell>Name:</TableCell>
+            <TableCell>Value:</TableCell>
           </TableRow>
-        </TableHeader>
-        <TableBody displayRowCheckbox={false} >
+        </TableHead>
+        <TableBody>
           {rows}
         </TableBody>
       </Table>

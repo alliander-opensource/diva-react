@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Row, Col } from 'react-flexbox-grid';
-import RaisedButton from 'material-ui/RaisedButton';
-import IconAlertError from 'material-ui/svg-icons/alert/error';
+import Button from '@material-ui/core/Button';
+import IconAlertError from '@material-ui/icons/Error';
 
 const RequestAttributeDisclosureError = ({ onRetry }) => (
   <div id="disclosure-error">
@@ -15,11 +15,7 @@ const RequestAttributeDisclosureError = ({ onRetry }) => (
       <Col xs={6}>
       Oops, something went wrong!<br />
         <br />
-        <RaisedButton
-          label="Retry"
-          primary
-          onClick={onRetry}
-        />
+        <Button onClick={onRetry} color="primary" variant="contained">Retry</Button>
       </Col>
     </Row>
   </div>

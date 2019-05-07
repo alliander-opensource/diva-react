@@ -2,6 +2,8 @@
 
 The version in this branch had been refactored to support the new IRMA protocol. With this change, Diva doesn't require a backend anymore. Specify the URL to your IRMA server in `src/sagas/index.js` and run it with the new-irma branch of diva-js-reference-3p-frontend.
 
+With this refactor, we also upgraded to Material UI 3.x.
+
 Notable absent features:
 - No session support (still uncertain whether we will add that again)
 - No Authenticated IRMA JWT issue/disclose support (will be implemented)
