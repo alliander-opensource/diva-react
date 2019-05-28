@@ -13,7 +13,7 @@ function extractAttributeIds(attributes) {
  * @param {array} requiredAttributes - an array containing required attributes with their label
  * @returns {Component}
  */
-export default function withDivaAuthorization(attributes = {}, requiredAttributes = [], viewId = 'diva-auth') {
+export default function withDivaAuthorization(attributes = {}, requiredAttributes = [], viewId = 'diva-auth', qrOnly = false) {
   return (WrappedComponent) => {
     class WithAuthorization extends Component {
       hasRequiredAttributes = () => {
@@ -30,7 +30,11 @@ export default function withDivaAuthorization(attributes = {}, requiredAttribute
           return <WrappedComponent />;
         }
         return (
-          <RequestAttributeDisclosure viewId={viewId} requiredAttributes={requiredAttributes} />
+          <RequestAttributeDisclosure
+            viewId={viewId}
+            requiredAttributes={requiredAttributes}
+            qrOnly={qrOnly}
+          />
         );
       }
     }

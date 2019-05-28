@@ -39,17 +39,18 @@ class Sign extends Component {
       requiredAttributes,
       message,
       divaSession,
+      qrOnly,
     } = this.props;
 
     return (
       <div>
-        <SignToolbar />
+        {qrOnly !== true ? <SignToolbar /> : undefined}
 
         {divaSession && divaSession.sessionStatus !== 'STARTING' ? (
           <div>
             {(divaSession.sessionStatus === 'FAILED_TO_START') && <SignError onRetry={() => this.startIrmaSession()} /> }
 
-            {(divaSession.sessionStatus === 'INITIALIZED') && <SignInitialized requiredAttributes={requiredAttributes} qrContent={divaSession.qrContent} message={message} /> }
+            {(divaSession.sessionStatus === 'INITIALIZED') && <SignInitialized requiredAttributes={requiredAttributes} qrContent={divaSession.qrContent} message={message} qrOnly={qrOnly} /> }
             {(divaSession.sessionStatus === 'CONNECTED') && <SignConnected /> }
             {(divaSession.sessionStatus === 'DONE' && divaSession.proofStatus === 'VALID') && <SignDone attributes={divaSession.disclosedAttributes} jwt={divaSession.jwt} signature={divaSession.signature.signature} message={message} /> }
             {(divaSession.sessionStatus === 'DONE' && divaSession.proofStatus !== 'VALID') && <SignNotFound onRetry={() => this.startIrmaSession()} /> }
@@ -72,6 +73,7 @@ class Sign extends Component {
 
 Sign.propTypes = {
   viewId: PropTypes.string.isRequired,
+  qrOnly: PropTypes.bool,
   message: PropTypes.string.isRequired,
   requiredAttributes: PropTypes.arrayOf(PropTypes.object).isRequired,
   startIrmaSession: PropTypes.func.isRequired,

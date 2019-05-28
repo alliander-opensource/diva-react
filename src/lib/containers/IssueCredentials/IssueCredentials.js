@@ -37,17 +37,18 @@ class IssueCredentials extends Component {
     const {
       credentials,
       divaSession,
+      qrOnly,
     } = this.props;
 
     return (
       <div>
-        <IssueCredentialsToolbar />
+        {qrOnly !== true ? <IssueCredentialsToolbar /> : undefined}
 
         {divaSession && divaSession.sessionStatus !== 'STARTING' ? (
           <div>
             {(divaSession.sessionStatus === 'FAILED_TO_START') && <IssueCredentialsError onRetry={() => this.startIrmaSession()} /> }
 
-            {(divaSession.sessionStatus === 'INITIALIZED') && <IssueCredentialsInitialized credentials={credentials.map(el => el.credential)} qrContent={divaSession.qrContent} /> }
+            {(divaSession.sessionStatus === 'INITIALIZED') && <IssueCredentialsInitialized credentials={credentials.map(el => el.credential)} qrContent={divaSession.qrContent} qrOnly={qrOnly} /> }
             {(divaSession.sessionStatus === 'CONNECTED') && <IssueCredentialsConnected /> }
             {(divaSession.sessionStatus === 'DONE') && <IssueCredentialsDone onRetry={() => this.startIrmaSession()} /> }
             {(divaSession.sessionStatus === 'CANCELLED' || divaSession.sessionStatus === 'ABANDONED') && <IssueCredentialsCancelled onRetry={() => this.startIrmaSession()} /> }
@@ -69,6 +70,7 @@ class IssueCredentials extends Component {
 
 IssueCredentials.propTypes = {
   viewId: PropTypes.string.isRequired,
+  qrOnly: PropTypes.bool,
   credentials: PropTypes.arrayOf(PropTypes.object).isRequired,
   startIrmaSession: PropTypes.func.isRequired,
   abandonIrmaSession: PropTypes.func.isRequired,

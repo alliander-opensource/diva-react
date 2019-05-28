@@ -37,17 +37,18 @@ class RequestAttributeDisclosure extends Component {
     const {
       requiredAttributes,
       divaSession,
+      qrOnly,
     } = this.props;
 
     return (
       <div>
-        <RequestAttributeDisclosureToolbar />
+        {qrOnly !== true ? <RequestAttributeDisclosureToolbar /> : undefined}
 
         {divaSession && divaSession.sessionStatus !== 'STARTING' ? (
           <div>
             {(divaSession.sessionStatus === 'FAILED_TO_START') && <RequestAttributeDisclosureError onRetry={() => this.startIrmaSession()} /> }
 
-            {(divaSession.sessionStatus === 'INITIALIZED') && <RequestAttributeDisclosureInitialized requiredAttributes={requiredAttributes} qrContent={divaSession.qrContent} /> }
+            {(divaSession.sessionStatus === 'INITIALIZED') && <RequestAttributeDisclosureInitialized requiredAttributes={requiredAttributes} qrContent={divaSession.qrContent} qrOnly={qrOnly} /> }
             {(divaSession.sessionStatus === 'CONNECTED') && <RequestAttributeDisclosureConnected /> }
             {(divaSession.sessionStatus === 'DONE' && divaSession.proofStatus === 'VALID') && <RequestAttributeDisclosureDone /> }
             {(divaSession.sessionStatus === 'DONE' && divaSession.proofStatus !== 'VALID') && <RequestAttributeDisclosureNotFound onRetry={() => this.startIrmaSession()} /> }
@@ -70,6 +71,7 @@ class RequestAttributeDisclosure extends Component {
 
 RequestAttributeDisclosure.propTypes = {
   viewId: PropTypes.string.isRequired,
+  qrOnly: PropTypes.bool,
   requiredAttributes: PropTypes.arrayOf(PropTypes.object).isRequired,
   startIrmaSession: PropTypes.func.isRequired,
   abandonIrmaSession: PropTypes.func.isRequired,

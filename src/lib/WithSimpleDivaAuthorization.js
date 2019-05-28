@@ -12,12 +12,13 @@ export default function withSimpleDivaAuthorization(
   requiredAttribute,
   requiredAttributeLabel,
   viewId = 'simple-diva-auth',
+  qrOnly = false,
 ) {
   return (WrappedComponent) => {
     const requiredAttributes = [{
       label: requiredAttributeLabel || requiredAttribute,
       attributes: [requiredAttribute],
     }];
-    return withDivaAuthorization(attributes, requiredAttributes, viewId)(WrappedComponent);
+    return withDivaAuthorization(attributes, requiredAttributes, viewId, qrOnly)(WrappedComponent);
   };
 }
