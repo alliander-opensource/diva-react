@@ -1,5 +1,6 @@
-import { delay } from 'redux-saga';
-import { take, put, call, race, all, takeEvery, fork } from 'redux-saga/effects';
+import {
+  delay, take, put, call, race, all, takeEvery, fork,
+} from 'redux-saga/effects';
 
 import { types, actions } from '../reducers/diva-reducer';
 import service from '../services/diva-service';
@@ -23,7 +24,9 @@ function* startIrmaSessionSaga(action) {
       );
       yield put(
         actions.startPolling(
-          action.viewId, action.irmaSessionType, response.token, response.sessionPtr));
+          action.viewId, action.irmaSessionType, response.token, response.sessionPtr,
+        ),
+      );
     } else {
       yield put(actions.irmaSessionFailedToStart(action.viewId, 'Server Error', response));
     }
@@ -70,7 +73,7 @@ function* pollIrmaSessionSaga(viewId, irmaSessionType, irmaSessionId) {
       const { irmaUrl, jwtEnabled, jwtPublicKey } = irmaConfig;
       const data = yield call(service.poll, irmaSessionId, irmaUrl, jwtEnabled, jwtPublicKey);
       yield put(actions.processPollSuccess(viewId, irmaSessionType, irmaSessionId, data));
-      yield call(delay, 1000);
+      yield delay(1000);
     } catch (error) {
       yield put(actions.processPollFailure(viewId, irmaSessionId, error));
       yield put(actions.stopPolling(viewId, irmaSessionId));

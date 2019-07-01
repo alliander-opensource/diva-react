@@ -19,8 +19,9 @@ export default function withDivaAuthorization(attributes = {}, requiredAttribute
       hasRequiredAttributes = () => {
         const existingAttributes = extractAttributeIds(attributes);
         return requiredAttributes.reduce(
-          (accumulator, requiredAttribute) =>
-            accumulator && requiredAttribute.attributes.some(el => existingAttributes.includes(el)),
+          (accumulator, requiredAttribute) => accumulator && requiredAttribute.attributes.some(
+            el => existingAttributes.includes(el),
+          ),
           true,
         );
       }

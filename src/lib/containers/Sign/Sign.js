@@ -86,6 +86,9 @@ Sign.propTypes = {
     irmaSessionId: PropTypes.string,
     sessionStatus: PropTypes.string,
     proofStatus: PropTypes.string,
+    jwt: PropTypes.string,
+    signature: PropTypes.object,
+    disclosedAttributes: PropTypes.array,
   }),
 };
 

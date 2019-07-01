@@ -59,6 +59,7 @@ class SignDone extends Component {
                 <a
                   href={`https://jwt.io/#debugger-io?token=${this.props.jwt}`}
                   target="_blank"
+                  rel="noopener noreferrer"
                 >
                   Click here to show the signature in jwt.io
                 </a>

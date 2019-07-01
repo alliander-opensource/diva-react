@@ -123,8 +123,8 @@ export default (state = initialState, action) => {
         proofStatus: action.proofStatus,
         jwt: action.jwt,
       });
-      const disclosedAttributes =
-        (action.disclosedAttributes !== undefined) ? action.disclosedAttributes : [];
+      const disclosedAttributes = (action.disclosedAttributes !== undefined)
+        ? action.disclosedAttributes : [];
       return {
         ...newState,
         attributes:
