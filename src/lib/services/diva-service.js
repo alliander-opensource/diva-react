@@ -17,7 +17,8 @@ function pollJwt(token, irmaUrl, jwtPublicKey) {
     .get(`${irmaUrl}/session/${token}/result-jwt`)
     .then(response => response.data)
     .then((jwtToken) => {
-      const jwtBody = jwt.verify(jwtToken, jwtPublicKey); // TODO: check audience!
+      // TODO: IRMA server doesn't send audience?
+      const jwtBody = jwt.verify(jwtToken, jwtPublicKey);
 
       return {
         ...jwtBody,
