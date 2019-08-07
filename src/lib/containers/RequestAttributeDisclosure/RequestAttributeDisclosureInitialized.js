@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import QRCode from 'qrcode.react';
 import { Row, Col } from 'react-flexbox-grid';
 
-const RequestAttributeDisclosureInitialized = ({ requiredAttributes, qrContent, qrOnly }) => (
+const RequestAttributeDisclosureInitialized = ({ label, qrContent, qrOnly }) => (
   qrOnly === true
     ? (
       <QRCode value={JSON.stringify(qrContent)} size={256} />
@@ -13,7 +13,7 @@ const RequestAttributeDisclosureInitialized = ({ requiredAttributes, qrContent, 
           <Col xs={6}>
             In order to view this page, the following attributes are required:<br />
             <br />
-            <b>{requiredAttributes.map(el => el.label).join(', ')}</b><br />
+            <b>{label}</b><br />
             <br />
           </Col>
         </Row>
@@ -35,7 +35,7 @@ const RequestAttributeDisclosureInitialized = ({ requiredAttributes, qrContent, 
 );
 
 RequestAttributeDisclosureInitialized.propTypes = {
-  requiredAttributes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  label: PropTypes.string.isRequired,
   qrContent: PropTypes.objectOf(PropTypes.string).isRequired,
   qrOnly: PropTypes.bool,
 };

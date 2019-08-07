@@ -30,12 +30,12 @@ class RequestAttributeDisclosure extends Component {
   }
 
   startIrmaSession() {
-    this.props.startIrmaSession(this.props.viewId, 'disclosing', this.props.requiredAttributes);
+    this.props.startIrmaSession(this.props.viewId, 'disclosure', this.props.requiredAttributes);
   }
 
   render() {
     const {
-      requiredAttributes,
+      label,
       divaSession,
       qrOnly,
     } = this.props;
@@ -48,7 +48,7 @@ class RequestAttributeDisclosure extends Component {
           <div>
             {(divaSession.sessionStatus === 'FAILED_TO_START') && <RequestAttributeDisclosureError onRetry={() => this.startIrmaSession()} /> }
 
-            {(divaSession.sessionStatus === 'INITIALIZED') && <RequestAttributeDisclosureInitialized requiredAttributes={requiredAttributes} qrContent={divaSession.qrContent} qrOnly={qrOnly} /> }
+            {(divaSession.sessionStatus === 'INITIALIZED') && <RequestAttributeDisclosureInitialized label={label} qrContent={divaSession.qrContent} qrOnly={qrOnly} /> }
             {(divaSession.sessionStatus === 'CONNECTED') && <RequestAttributeDisclosureConnected /> }
             {(divaSession.sessionStatus === 'DONE' && divaSession.proofStatus === 'VALID') && <RequestAttributeDisclosureDone /> }
             {(divaSession.sessionStatus === 'DONE' && divaSession.proofStatus !== 'VALID') && <RequestAttributeDisclosureNotFound onRetry={() => this.startIrmaSession()} /> }
@@ -72,7 +72,8 @@ class RequestAttributeDisclosure extends Component {
 RequestAttributeDisclosure.propTypes = {
   viewId: PropTypes.string.isRequired,
   qrOnly: PropTypes.bool,
-  requiredAttributes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  requiredAttributes: PropTypes.arrayOf(PropTypes.array).isRequired,
+  label: PropTypes.string.isRequired,
   startIrmaSession: PropTypes.func.isRequired,
   abandonIrmaSession: PropTypes.func.isRequired,
   divaSession: PropTypes.shape({

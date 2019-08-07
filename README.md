@@ -113,7 +113,7 @@ import {WithSimpleDivaAuthorization } from 'diva-react';
 
 <Route
   path="/my-account”
-  component={ WithSimpleDivaAuthorization(attributes, 'pbdf.pbdf.email.email', 'Email')(MyAccount) }
+  component={ WithSimpleDivaAuthorization(attributes, ['pbdf.pbdf.email.email'], 'Email')(MyAccount) }
 />
 ```
 
@@ -303,18 +303,19 @@ All components need to be bound to a Redux store that contains the reducer/saga 
 - `Sign` - Used for signing messages.
     - `viewId:` Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
     - `message:` The message that will be signed by the user
-    - `requiredAttributes:` contains the list of required attributes in the signature, which is defined as 'a set of conjunctions containing disjunctions', a concept that is explained [at the IRMA webpage](http://credentials.github.io/protocols/irma-protocol/#verification)
+    - `requiredAttributes:` A condiscon list of attributes that will be used in the signature, see [the IRMA documentation](https://irma.app/docs/condiscon/) for the format of this list.
 
 For disclosure, two high-order components are available, which will show a QR code if attributes aren't disclosed yet, or show the underlying component if attributes are already disclosed:
 - `WithDivaAuthorization` - Default version
     - `viewId:` Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
     - `attributes:` A dictionary with attributes that are already disclosed. The key is the attribute identifier (for instance `pbdf.pbdf.email.email` for an e-mail attribute issued by the Privacy By Design foundation). The value is the value of the attribute of the user. One can obtain this value from Redux in `divaReducer.attributes`.
-    - `requiredAttributes:` A list of attributes that need to be disclosed. This list is an IRMA API Server content object, see the (IRMA documentation)[http://credentials.github.io/protocols/irma-protocol/#verification] for details.
-- `WithSimpleDivaAuthorization` - Simplified version that can only request disclosure of one attribute
+    - `requiredAttributes:` A condiscon list of attributes that need to be disclosed, see [the IRMA documentation](https://irma.app/docs/condiscon/) for the format of this list.
+    - `label:` The label shown to the user when requesting these attributes.
+- `WithSimpleDivaAuthorization` - Simplified version that can only request disclosure of a flat list of attributes.
     - `viewId:` Id of the view component (used so that the right view will be updated if we have multiple sessions at the same time). Should be unique per application.
     - `attributes:` A dictionary with attributes that are already disclosed. The key is the attribute identifier (for instance `pbdf.pbdf.email.email` for an e-mail attribute issued by the Privacy By Design foundation). The value is the value of the attribute of the user. One can obtain this value from Redux in `divaReducer.attributes`.
-    - `requiredAttribute:` The identifier of attribute that needs to be disclosed.
-    - `requiredAttributeLabel:` The label shown to the user when requesting this attribute.
+    - `requiredAttributes:` Array with identifiers of the attributes that need to be disclosed.
+    - `label:` The label shown to the user when requesting these attributes.
 
 ## IRMA
 

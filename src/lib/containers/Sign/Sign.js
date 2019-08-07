@@ -31,12 +31,12 @@ class Sign extends Component {
 
   startIrmaSession() {
     const { viewId, message } = this.props;
-    this.props.startIrmaSession(viewId, 'signing', this.props.requiredAttributes, message);
+    this.props.startIrmaSession(viewId, 'signature', this.props.requiredAttributes, message);
   }
 
   render() {
     const {
-      requiredAttributes,
+      label,
       message,
       divaSession,
       qrOnly,
@@ -50,7 +50,7 @@ class Sign extends Component {
           <div>
             {(divaSession.sessionStatus === 'FAILED_TO_START') && <SignError onRetry={() => this.startIrmaSession()} /> }
 
-            {(divaSession.sessionStatus === 'INITIALIZED') && <SignInitialized requiredAttributes={requiredAttributes} qrContent={divaSession.qrContent} message={message} qrOnly={qrOnly} /> }
+            {(divaSession.sessionStatus === 'INITIALIZED') && <SignInitialized label={label} qrContent={divaSession.qrContent} message={message} qrOnly={qrOnly} /> }
             {(divaSession.sessionStatus === 'CONNECTED') && <SignConnected /> }
             {(divaSession.sessionStatus === 'DONE' && divaSession.proofStatus === 'VALID') && <SignDone attributes={divaSession.disclosedAttributes} jwt={divaSession.jwt} signature={divaSession.signature.signature} message={message} /> }
             {(divaSession.sessionStatus === 'DONE' && divaSession.proofStatus !== 'VALID') && <SignNotFound onRetry={() => this.startIrmaSession()} /> }
@@ -75,7 +75,8 @@ Sign.propTypes = {
   viewId: PropTypes.string.isRequired,
   qrOnly: PropTypes.bool,
   message: PropTypes.string.isRequired,
-  requiredAttributes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  label: PropTypes.string.isRequired,
+  requiredAttributes: PropTypes.arrayOf(PropTypes.array).isRequired,
   startIrmaSession: PropTypes.func.isRequired,
   abandonIrmaSession: PropTypes.func.isRequired,
   divaSession: PropTypes.shape({

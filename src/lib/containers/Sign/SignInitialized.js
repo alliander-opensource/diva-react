@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import QRCode from 'qrcode.react';
 import { Row, Col } from 'react-flexbox-grid';
 
-const SignInitialized = ({ requiredAttributes, message, qrContent, qrOnly }) => (
+const SignInitialized = ({ label, message, qrContent, qrOnly }) => (
   qrOnly === true
     ? (
       <QRCode value={JSON.stringify(qrContent)} size={256} />
@@ -14,7 +14,7 @@ const SignInitialized = ({ requiredAttributes, message, qrContent, qrOnly }) => 
             Message that will be signed: <b>{message}</b><br />
             <br />
             With the following attributes:<br />
-            <b>{requiredAttributes.map(el => el.label).join(', ')}</b><br />
+            <b>{label}</b><br />
             <br />
           </Col>
         </Row>
@@ -36,7 +36,7 @@ const SignInitialized = ({ requiredAttributes, message, qrContent, qrOnly }) => 
 );
 
 SignInitialized.propTypes = {
-  requiredAttributes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  label: PropTypes.string.isRequired,
   message: PropTypes.string.isRequired,
   qrContent: PropTypes.objectOf(PropTypes.string).isRequired,
   qrOnly: PropTypes.bool,

@@ -1,11 +1,11 @@
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
 
-function startIrmaSession(irmaUrl, type, content, message, credentials) {
+function startIrmaSession(irmaUrl, type, disclose, message, credentials) {
   return axios
     .post(`${irmaUrl}/session`, {
-      type,
-      content,
+      '@context': `https://irma.app/ld/request/${type}/v2`,
+      disclose,
       credentials,
       message,
     })

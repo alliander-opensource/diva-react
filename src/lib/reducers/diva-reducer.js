@@ -65,6 +65,10 @@ function containsAttribute(attributeStore, newAttribute) {
   );
 }
 
+function flatten(arrays) {
+  return [].concat.apply([], arrays); // eslint-disable-line prefer-spread
+}
+
 function filterDuplicateAttributes(attributeStore, newAttributes) {
   return newAttributes.filter(el => !containsAttribute(attributeStore, el));
 }
@@ -123,8 +127,9 @@ export default (state = initialState, action) => {
         proofStatus: action.proofStatus,
         jwt: action.jwt,
       });
+      // TODO: don't convert to a flat array and keep condiscon structure?
       const disclosedAttributes = (action.disclosedAttributes !== undefined)
-        ? action.disclosedAttributes : [];
+        ? flatten(action.disclosedAttributes) : [];
       return {
         ...newState,
         attributes:
@@ -135,7 +140,7 @@ export default (state = initialState, action) => {
       return updateStateForViewIdWith(state, action.viewId, {
         proofStatus: action.proofStatus,
         jwt: action.jwt,
-        disclosedAttributes: action.disclosedAttributes
+        disclosedAttributes: flatten(action.disclosedAttributes)
           .filter(el => el.status !== 'EXTRA'), // TMP hack, see comment above in containsAttribute()
         signature: action.signature,
       });

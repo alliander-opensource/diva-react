@@ -41,7 +41,7 @@ function* abandonIrmaSessionSaga(action) {
 
 function* processPollSuccess(action) {
   if (['TIMEOUT', 'DONE', 'CANCELLED'].includes(action.data.status)) {
-    if (action.irmaSessionType === 'signing') {
+    if (action.irmaSessionType === 'signature') {
       yield put(
         actions.signatureSessionCompleted(
           action.viewId,

@@ -30,7 +30,7 @@ class IssueCredentials extends Component {
   }
 
   startIrmaSession() {
-    this.props.startIrmaSession(this.props.viewId, 'issuing', undefined, undefined, this.props.credentials); // TODO: other function call instead of empty params?
+    this.props.startIrmaSession(this.props.viewId, 'issuance', undefined, undefined, this.props.credentials); // TODO: other function call instead of empty params?
   }
 
   render() {
