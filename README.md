@@ -36,10 +36,8 @@ Diva-react requires React, Redux and Redux-saga.
 Installation into your project can be done with:
 
 ```
-    npm install && npm run build && npm link
+    npm install diva-react
 ```
-
-TODO: add version 2.0.0 to NPM for easier installation.
 
 ## Initial setup
 
