@@ -1,36 +1,35 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Row, Col } from 'react-flexbox-grid';
-import IconActionCheckCircle from 'material-ui/svg-icons/action/check-circle';
-import {
-  Table,
-  TableBody,
-  TableHeader,
-  TableHeaderColumn,
-  TableRow,
-  TableRowColumn,
-} from 'material-ui/Table';
+
+import IconActionCheckCircle from '@material-ui/icons/CheckCircle';
+
+import Table from '@material-ui/core/Table';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableBody from '@material-ui/core/TableBody';
+import TableRow from '@material-ui/core/TableRow';
 
 class SignDone extends Component {
   renderAttributes = () => {
     const { attributes } = this.props;
 
-    const rows = Object.keys(attributes).map(el => (
-      <TableRow key={el}>
-        <TableRowColumn>{el}</TableRowColumn>
-        <TableRowColumn>{attributes[el]}</TableRowColumn>
+    const rows = attributes.map(el => (
+      <TableRow key={el.rawvalue + el.id}>
+        <TableCell>{el.rawvalue}</TableCell>
+        <TableCell>{el.id}</TableCell>
       </TableRow>
     ));
 
     return (
-      <Table selectable={false} >
-        <TableHeader displaySelectAll={false} >
+      <Table>
+        <TableHead>
           <TableRow>
-            <TableHeaderColumn>Name:</TableHeaderColumn>
-            <TableHeaderColumn>Value:</TableHeaderColumn>
+            <TableCell>Name:</TableCell>
+            <TableCell>Value:</TableCell>
           </TableRow>
-        </TableHeader>
-        <TableBody displayRowCheckbox={false} >
+        </TableHead>
+        <TableBody>
           {rows}
         </TableBody>
       </Table>
@@ -55,12 +54,19 @@ class SignDone extends Component {
             With the following attributes:
             {this.renderAttributes()}
             <br />
-            <a
-              href={`https://jwt.io/#debugger-io?token=${this.props.jwt}`}
-              target="_blank"
-            >
-              Click here to show the signature in jwt.io
-            </a>
+            {this.props.jwt // Show link to jwt.io if jwt was enabled, else display raw signature
+              ? (
+                <a
+                  href={`https://jwt.io/#debugger-io?token=${this.props.jwt}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Click here to show the signature in jwt.io
+                </a>
+              ) : (
+                JSON.stringify(this.props.signature)
+              )
+            }
           </Col>
         </Row>
       </div>
@@ -69,9 +75,10 @@ class SignDone extends Component {
 }
 
 SignDone.propTypes = {
-  attributes: PropTypes.objectOf(PropTypes.string).isRequired,
-  jwt: PropTypes.string.isRequired,
+  attributes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  signature: PropTypes.arrayOf(PropTypes.object),
   message: PropTypes.string.isRequired,
+  jwt: PropTypes.string,
 };
 
 export default SignDone;

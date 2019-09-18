@@ -1,6 +1,22 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import RequestAttributeDisclosure from './containers/RequestAttributeDisclosure/RequestAttributeDisclosure';
+
+function extractAttributeIds(attributes) {
+  return attributes.map(el => el.id);
+}
+
+function hasRequiredAttributes(attributes, condiscon) {
+  const existingAttributes = extractAttributeIds(attributes);
+
+  return condiscon.every(
+    discon => discon.some(
+      con => con.every(
+        attr => existingAttributes.includes(attr),
+      ),
+    ),
+  );
+}
 
 /**
  * React middleware function that renders based on available and required attributes.
@@ -8,27 +24,20 @@ import RequestAttributeDisclosure from './containers/RequestAttributeDisclosure/
  * @param {array} requiredAttributes - an array containing required attributes with their label
  * @returns {Component}
  */
-export default function withDivaAuthorization(attributes = {}, requiredAttributes = [], viewId = 'diva-auth') {
-  return (WrappedComponent) => {
-    class WithAuthorization extends Component {
-      hasRequiredAttributes = () => {
-        const existingAttributes = Object.keys(attributes);
-        return requiredAttributes.reduce(
-          (accumulator, requiredAttribute) =>
-            accumulator && requiredAttribute.attributes.some(el => existingAttributes.includes(el)),
-          true,
-        );
+export default function withDivaAuthorization(attributes = {}, requiredAttributesCondiscon = [], label = '', viewId = 'diva-auth', qrOnly = false) {
+  return WrappedComponent => (
+    () => {
+      if (hasRequiredAttributes(attributes, requiredAttributesCondiscon)) {
+        return <WrappedComponent />;
       }
-
-      render() {
-        if (this.hasRequiredAttributes(attributes, requiredAttributes)) {
-          return <WrappedComponent />;
-        }
-        return (
-          <RequestAttributeDisclosure viewId={viewId} requiredAttributes={requiredAttributes} />
-        );
-      }
+      return (
+        <RequestAttributeDisclosure
+          viewId={viewId}
+          requiredAttributes={requiredAttributesCondiscon}
+          label={label}
+          qrOnly={qrOnly}
+        />
+      );
     }
-    return WithAuthorization;
-  };
+  );
 }

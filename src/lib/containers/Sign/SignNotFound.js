@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Row, Col } from 'react-flexbox-grid';
-import RaisedButton from 'material-ui/RaisedButton';
+import Button from '@material-ui/core/Button';
 
 // TODO: same component as RequestAttributeDisclosureNotFound, merge?
 const SignNotFound = ({ onRetry }) => (
@@ -10,11 +10,7 @@ const SignNotFound = ({ onRetry }) => (
       <Col xs={6}>
         The QR code expired.<br />
         <br />
-        <RaisedButton
-          label="Retry"
-          primary
-          onClick={onRetry}
-        />
+        <Button onClick={onRetry} color="primary" variant="contained">Retry</Button>
         <br />
       </Col>
     </Row>

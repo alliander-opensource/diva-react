@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Row, Col } from 'react-flexbox-grid';
-import RaisedButton from 'material-ui/RaisedButton';
+import Button from '@material-ui/core/Button';
 
 const IssueCredentialsCancelled = ({ onRetry }) => (
   <div style={{ padding: '20px' }} id="issue-cancelled">
@@ -9,11 +9,7 @@ const IssueCredentialsCancelled = ({ onRetry }) => (
       <Col xs={6}>
         Issuance of credentials was cancelled.<br />
         <br />
-        <RaisedButton
-          label="Retry"
-          primary
-          onClick={onRetry}
-        />
+        <Button onClick={onRetry} color="primary" variant="contained">Retry</Button>
         <br />
       </Col>
     </Row>

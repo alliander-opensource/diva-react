@@ -1,20 +1,32 @@
-import { delay } from 'redux-saga';
-import { take, put, call, race, all, takeEvery, fork } from 'redux-saga/effects';
+import {
+  delay, take, put, call, race, all, takeEvery, fork,
+} from 'redux-saga/effects';
 
 import { types, actions } from '../reducers/diva-reducer';
 import service from '../services/diva-service';
 
-function* startIrmaSessionSaga(baseUrl, action) {
+let irmaConfig = {
+  irmaUrl: 'https://FILL_IN', // TODO, default IRMA server?
+  jwtEnabled: false,
+  jwtPublicKey: 'FILL_IN',
+};
+
+function* startIrmaSessionSaga(action) {
   try {
     const response = yield call(
-      service.startIrmaSession, action.irmaSessionType, action.options, baseUrl,
+      service.startIrmaSession,
+      irmaConfig.irmaUrl,
+      action.irmaSessionType, action.content, action.message, action.credentials,
     );
-    if (response.irmaSessionId && response.qrContent) {
+    if (response.sessionPtr && response.token) {
       yield put(
-        actions.irmaSessionStarted(action.viewId, response.irmaSessionId, response.qrContent),
+        actions.irmaSessionStarted(action.viewId, response.token, response.sessionPtr),
       );
       yield put(
-        actions.startPolling(action.viewId, action.irmaSessionType, response.irmaSessionId));
+        actions.startPolling(
+          action.viewId, action.irmaSessionType, response.token, response.sessionPtr,
+        ),
+      );
     } else {
       yield put(actions.irmaSessionFailedToStart(action.viewId, 'Server Error', response));
     }
@@ -28,25 +40,40 @@ function* abandonIrmaSessionSaga(action) {
 }
 
 function* processPollSuccess(action) {
-  if (['NOT_FOUND', 'DONE', 'CANCELLED'].includes(action.data.serverStatus)) {
-    yield put(
-      actions.irmaSessionCompleted(
-        action.viewId,
-        action.data.serverStatus,
-        action.data.proofStatus,
-        { attributes: action.data.attributes, jwt: action.data.jwt },
-      ),
-    );
+  if (['TIMEOUT', 'DONE', 'CANCELLED'].includes(action.data.status)) {
+    if (action.irmaSessionType === 'signature') {
+      yield put(
+        actions.signatureSessionCompleted(
+          action.viewId,
+          action.data.status,
+          action.data.proofStatus,
+          action.data.disclosed,
+          action.data.signature,
+          action.data.jwt,
+        ),
+      );
+    } else {
+      yield put(
+        actions.discloseSessionCompleted(
+          action.viewId,
+          action.data.status,
+          action.data.proofStatus,
+          action.data.disclosed,
+          action.data.jwt,
+        ),
+      );
+    }
     yield put(actions.stopPolling(action.viewId, action.irmaSessionId));
   }
 }
 
-function* pollIrmaSessionSaga(viewId, irmaSessionType, irmaSessionId, baseUrl) {
+function* pollIrmaSessionSaga(viewId, irmaSessionType, irmaSessionId) {
   while (true) {
     try {
-      const data = yield call(service.poll, irmaSessionType, irmaSessionId, baseUrl);
-      yield put(actions.processPollSuccess(viewId, irmaSessionId, data));
-      yield call(delay, 1000);
+      const { irmaUrl, jwtEnabled, jwtPublicKey } = irmaConfig;
+      const data = yield call(service.poll, irmaSessionId, irmaUrl, jwtEnabled, jwtPublicKey);
+      yield put(actions.processPollSuccess(viewId, irmaSessionType, irmaSessionId, data));
+      yield delay(1000);
     } catch (error) {
       yield put(actions.processPollFailure(viewId, irmaSessionId, error));
       yield put(actions.stopPolling(viewId, irmaSessionId));
@@ -54,22 +81,27 @@ function* pollIrmaSessionSaga(viewId, irmaSessionType, irmaSessionId, baseUrl) {
   }
 }
 
-export function* watchPollSaga(baseUrl) {
+export function* watchPollSaga() {
   while (true) {
     const { viewId, irmaSessionType, irmaSessionId } = yield take(types.START_POLLING);
     yield race([
-      call(pollIrmaSessionSaga, viewId, irmaSessionType, irmaSessionId, baseUrl),
+      call(pollIrmaSessionSaga, viewId, irmaSessionType, irmaSessionId),
       take(action => action.type === types.STOP_POLLING && action.irmaSessionId === irmaSessionId),
     ]);
   }
 }
 
-function* divaSagas(baseUrl = '/api') {
+function* divaSagas(passedIrmaConfig) {
+  if (passedIrmaConfig !== undefined) {
+    // TODO: config validation?
+    irmaConfig = passedIrmaConfig;
+  }
+
   yield all([
-    takeEvery(types.START_SESSION, startIrmaSessionSaga, baseUrl),
+    takeEvery(types.START_SESSION, startIrmaSessionSaga),
     takeEvery(types.ABANDON_SESSION, abandonIrmaSessionSaga),
     takeEvery(types.PROCESS_POLL_SUCCESS, processPollSuccess),
-    fork(watchPollSaga, baseUrl),
+    fork(watchPollSaga),
   ]);
 }
 

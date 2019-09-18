@@ -1,6 +1,6 @@
 import React from 'react';
 import { Row, Col } from 'react-flexbox-grid';
-import IconActionCheckCircle from 'material-ui/svg-icons/action/check-circle';
+import IconActionCheckCircle from '@material-ui/icons/CheckCircle';
 
 const RequestAttributeDisclosureDone = () => (
   <div id="disclosure-completed">

@@ -1,30 +1,44 @@
 import axios from 'axios';
+import jwt from 'jsonwebtoken';
 
-function startIrmaSession(irmaSessionType, options, baseUrl) {
-  // TODO: send options and parse in backend based on type?
-  // only properties that are passed to the service will actually be included in the request
+function startIrmaSession(irmaUrl, type, disclose, message, credentials) {
   return axios
-    .post(`${baseUrl}/start-irma-session`, {
-      type: irmaSessionType,
-      content: options.attributesRequired,
-      message: options.message,
-      credentialType: options.credentialType,
-    }, {
-      withCredentials: true,
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+    .post(`${irmaUrl}/session`, {
+      '@context': `https://irma.app/ld/request/${type}/v2`,
+      disclose,
+      credentials,
+      message,
     })
     .then(response => response.data);
 }
 
-function poll(irmaSessionType, irmaSessionId, baseUrl) {
+function pollJwt(token, irmaUrl, jwtPublicKey) {
   return axios
-    .get(`${baseUrl}/irma-session-status?irmaSessionType=${irmaSessionType}&irmaSessionId=${irmaSessionId}`, {
-      withCredentials: true,
-    })
+    .get(`${irmaUrl}/session/${token}/result-jwt`)
+    .then(response => response.data)
+    .then((jwtToken) => {
+      // TODO: IRMA server doesn't send audience?
+      const jwtBody = jwt.verify(jwtToken, jwtPublicKey);
+
+      return {
+        ...jwtBody,
+        jwt: jwtToken,
+      };
+    });
+}
+
+function pollPlain(token, irmaUrl) {
+  return axios
+    .get(`${irmaUrl}/session/${token}/result`)
     .then(response => response.data);
+}
+
+function poll(token, irmaUrl, jwtEnabled, jwtPublicKey) {
+  if (jwtEnabled) {
+    return pollJwt(token, irmaUrl, jwtPublicKey);
+  }
+
+  return pollPlain(token, irmaUrl);
 }
 
 const service = {

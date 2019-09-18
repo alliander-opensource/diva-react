@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { Row, Col } from 'react-flexbox-grid';
-import CircularProgress from 'material-ui/CircularProgress';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import { actions } from '../../reducers/diva-reducer';
 
@@ -19,7 +19,8 @@ class Sign extends Component {
   componentDidMount() {
     // TODO: this can be refactored out of here if
     // it becomes something like startOrResumeDivaSession(viewId)
-    if (!this.props.divaSession || this.props.divaSession.sessionStatus === 'ABANDONED') {
+    // TODO: check properly for divaSession
+    if (!this.props.divaSession || Object.keys(this.props.divaSession).length === 0 || this.props.divaSession.sessionStatus === 'ABANDONED') {
       this.startIrmaSession();
     }
   }
@@ -30,27 +31,28 @@ class Sign extends Component {
 
   startIrmaSession() {
     const { viewId, message } = this.props;
-    this.props.startIrmaSession(viewId, 'SIGN', { attributesRequired: this.props.requiredAttributes, message });
+    this.props.startIrmaSession(viewId, 'signature', this.props.requiredAttributes, message);
   }
 
   render() {
     const {
-      requiredAttributes,
+      label,
       message,
       divaSession,
+      qrOnly,
     } = this.props;
 
     return (
       <div>
-        <SignToolbar />
+        {qrOnly !== true ? <SignToolbar /> : undefined}
 
         {divaSession && divaSession.sessionStatus !== 'STARTING' ? (
           <div>
             {(divaSession.sessionStatus === 'FAILED_TO_START') && <SignError onRetry={() => this.startIrmaSession()} /> }
 
-            {(divaSession.sessionStatus === 'INITIALIZED') && <SignInitialized requiredAttributes={requiredAttributes} qrContent={divaSession.qrContent} message={message} /> }
+            {(divaSession.sessionStatus === 'INITIALIZED') && <SignInitialized label={label} qrContent={divaSession.qrContent} message={message} qrOnly={qrOnly} /> }
             {(divaSession.sessionStatus === 'CONNECTED') && <SignConnected /> }
-            {(divaSession.sessionStatus === 'DONE' && divaSession.proofStatus === 'VALID') && <SignDone attributes={divaSession.signature.attributes} jwt={divaSession.signature.jwt} message={message} /> }
+            {(divaSession.sessionStatus === 'DONE' && divaSession.proofStatus === 'VALID') && <SignDone attributes={divaSession.disclosedAttributes} jwt={divaSession.jwt} signature={divaSession.signature.signature} message={message} /> }
             {(divaSession.sessionStatus === 'DONE' && divaSession.proofStatus !== 'VALID') && <SignNotFound onRetry={() => this.startIrmaSession()} /> }
             {(divaSession.sessionStatus === 'CANCELLED' || divaSession.sessionStatus === 'ABANDONED') && <SignCancelled onRetry={() => this.startIrmaSession()} /> }
             {(divaSession.sessionStatus === 'NOT_FOUND') && <SignNotFound onRetry={() => this.startIrmaSession()} /> }
@@ -71,8 +73,10 @@ class Sign extends Component {
 
 Sign.propTypes = {
   viewId: PropTypes.string.isRequired,
+  qrOnly: PropTypes.bool,
   message: PropTypes.string.isRequired,
-  requiredAttributes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  label: PropTypes.string.isRequired,
+  requiredAttributes: PropTypes.arrayOf(PropTypes.array).isRequired,
   startIrmaSession: PropTypes.func.isRequired,
   abandonIrmaSession: PropTypes.func.isRequired,
   divaSession: PropTypes.shape({
@@ -83,6 +87,9 @@ Sign.propTypes = {
     irmaSessionId: PropTypes.string,
     sessionStatus: PropTypes.string,
     proofStatus: PropTypes.string,
+    jwt: PropTypes.string,
+    signature: PropTypes.object,
+    disclosedAttributes: PropTypes.array,
   }),
 };
 

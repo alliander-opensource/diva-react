@@ -1,22 +1,19 @@
 import React from 'react';
-import IconButton from 'material-ui/IconButton';
-import IconActionHelp from 'material-ui/svg-icons/action/help';
-import IconActionInfo from 'material-ui/svg-icons/action/info';
-import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+import IconActionHelp from '@material-ui/icons/Help';
+import IconActionInfo from '@material-ui/icons/Info';
+import Toolbar from '@material-ui/core/Toolbar';
 
 const RequestAttributeDisclosureToolbar = () => (
   <Toolbar style={{ backgroundColor: 'none' }}>
-    <ToolbarGroup>
-      <ToolbarTitle text="Attribute(s) Required" />
-    </ToolbarGroup>
-    <ToolbarGroup lastChild>
-      <IconButton tooltip="Help">
-        <IconActionHelp />
-      </IconButton>
-      <IconButton tooltip="Info">
-        <IconActionInfo />
-      </IconButton>
-    </ToolbarGroup>
+    <Typography style={{ flexGrow: 1 }}>Attribute(s) Required</Typography>
+    <IconButton tooltip="Help">
+      <IconActionHelp />
+    </IconButton>
+    <IconButton tooltip="Info">
+      <IconActionInfo />
+    </IconButton>
   </Toolbar>
 );
 

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { Row, Col } from 'react-flexbox-grid';
-import CircularProgress from 'material-ui/CircularProgress';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import { actions } from '../../reducers/diva-reducer';
 
@@ -19,7 +19,8 @@ class RequestAttributeDisclosure extends Component {
   componentDidMount() {
     // TODO: this can be refactored out of here if
     // it becomes something like startOrResumeDivaSession(viewId)
-    if (!this.props.divaSession || this.props.divaSession.sessionStatus === 'ABANDONED') {
+    // TODO: check properly for divaSession
+    if (!this.props.divaSession || Object.keys(this.props.divaSession).length === 0 || this.props.divaSession.sessionStatus === 'ABANDONED') {
       this.startIrmaSession();
     }
   }
@@ -29,24 +30,25 @@ class RequestAttributeDisclosure extends Component {
   }
 
   startIrmaSession() {
-    this.props.startIrmaSession(this.props.viewId, 'DISCLOSE', { attributesRequired: this.props.requiredAttributes });
+    this.props.startIrmaSession(this.props.viewId, 'disclosure', this.props.requiredAttributes);
   }
 
   render() {
     const {
-      requiredAttributes,
+      label,
       divaSession,
+      qrOnly,
     } = this.props;
 
     return (
       <div>
-        <RequestAttributeDisclosureToolbar />
+        {qrOnly !== true ? <RequestAttributeDisclosureToolbar /> : undefined}
 
         {divaSession && divaSession.sessionStatus !== 'STARTING' ? (
           <div>
             {(divaSession.sessionStatus === 'FAILED_TO_START') && <RequestAttributeDisclosureError onRetry={() => this.startIrmaSession()} /> }
 
-            {(divaSession.sessionStatus === 'INITIALIZED') && <RequestAttributeDisclosureInitialized requiredAttributes={requiredAttributes} qrContent={divaSession.qrContent} /> }
+            {(divaSession.sessionStatus === 'INITIALIZED') && <RequestAttributeDisclosureInitialized label={label} qrContent={divaSession.qrContent} qrOnly={qrOnly} /> }
             {(divaSession.sessionStatus === 'CONNECTED') && <RequestAttributeDisclosureConnected /> }
             {(divaSession.sessionStatus === 'DONE' && divaSession.proofStatus === 'VALID') && <RequestAttributeDisclosureDone /> }
             {(divaSession.sessionStatus === 'DONE' && divaSession.proofStatus !== 'VALID') && <RequestAttributeDisclosureNotFound onRetry={() => this.startIrmaSession()} /> }
@@ -69,7 +71,9 @@ class RequestAttributeDisclosure extends Component {
 
 RequestAttributeDisclosure.propTypes = {
   viewId: PropTypes.string.isRequired,
-  requiredAttributes: PropTypes.arrayOf(PropTypes.object).isRequired,
+  qrOnly: PropTypes.bool,
+  requiredAttributes: PropTypes.arrayOf(PropTypes.array).isRequired,
+  label: PropTypes.string.isRequired,
   startIrmaSession: PropTypes.func.isRequired,
   abandonIrmaSession: PropTypes.func.isRequired,
   divaSession: PropTypes.shape({
