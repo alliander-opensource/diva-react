@@ -1,5 +1,7 @@
 # diva-react
 
+**Warning: This IRMA library is a frontend-only library. This means that it is unsafe to use this for issuance of IRMA attributes in producten environments.**
+
 This repository contains a library to easily integrate [IRMA attributes](https://privacybydesign.foundation/irma-verifier/) into React based applications.
 
 See [diva-js-reference-3p-frontend](https://github.com/Alliander/diva-js-reference-3p-frontend) for an example implementation of this library.
