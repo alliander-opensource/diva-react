@@ -7,24 +7,32 @@ import service from '../services/diva-service';
 
 let irmaConfig = {
   irmaUrl: 'https://FILL_IN', // TODO, default IRMA server?
+  irmaBackendStartUrl: undefined,
+  irmaBackendProofUrl: undefined,
   jwtEnabled: false,
   jwtPublicKey: 'FILL_IN',
 };
 
 function* startIrmaSessionSaga(action) {
   try {
+    const irmaUrl = irmaConfig.irmaBackendStartUrl
+      ? irmaConfig.irmaBackendStartUrl
+      : `${irmaConfig.irmaUrl}/session`;
     const response = yield call(
       service.startIrmaSession,
-      irmaConfig.irmaUrl,
+      irmaUrl,
       action.irmaSessionType, action.content, action.message, action.credentials,
     );
     if (response.sessionPtr && response.token) {
       yield put(
-        actions.irmaSessionStarted(action.viewId, response.token, response.sessionPtr),
+        actions.irmaSessionStarted(action.viewId, response.sessionPtr.u, response.sessionPtr),
       );
+      const irmaProofUrl = irmaConfig.irmaBackendProofUrl
+        ? irmaConfig.irmaBackendProofUrl
+        : `${irmaConfig.irmaUrl}/${response.token}/result`;
       yield put(
         actions.startPolling(
-          action.viewId, action.irmaSessionType, response.token, response.sessionPtr,
+          action.viewId, action.irmaSessionType, response.sessionPtr.u, irmaProofUrl,
         ),
       );
     } else {
@@ -40,39 +48,47 @@ function* abandonIrmaSessionSaga(action) {
 }
 
 function* processPollSuccess(action) {
-  if (['TIMEOUT', 'DONE', 'CANCELLED'].includes(action.data.status)) {
+  if (action.data && action.data.status === 'DONE') {
+    const proof = yield call(
+      service.getProof, action.irmaProofUrl, irmaConfig.jwtEnabled, irmaConfig.jwtPublicKey,
+    );
+
     if (action.irmaSessionType === 'signature') {
       yield put(
         actions.signatureSessionCompleted(
           action.viewId,
-          action.data.status,
-          action.data.proofStatus,
-          action.data.disclosed,
-          action.data.signature,
-          action.data.jwt,
+          proof.status,
+          proof.proofStatus,
+          proof.disclosed,
+          proof.signature,
+          proof.jwt,
         ),
       );
     } else {
       yield put(
         actions.discloseSessionCompleted(
           action.viewId,
-          action.data.status,
-          action.data.proofStatus,
-          action.data.disclosed,
-          action.data.jwt,
+          proof.status,
+          proof.proofStatus,
+          proof.disclosed,
+          proof.jwt,
         ),
       );
     }
+  }
+
+  if (['TIMEOUT', 'DONE', 'CANCELLED'].includes(action.data.status)) {
     yield put(actions.stopPolling(action.viewId, action.irmaSessionId));
   }
 }
 
-function* pollIrmaSessionSaga(viewId, irmaSessionType, irmaSessionId) {
+function* pollIrmaSessionSaga(viewId, irmaSessionType, irmaSessionId, irmaProofUrl) {
   while (true) {
     try {
-      const { irmaUrl, jwtEnabled, jwtPublicKey } = irmaConfig;
-      const data = yield call(service.poll, irmaSessionId, irmaUrl, jwtEnabled, jwtPublicKey);
-      yield put(actions.processPollSuccess(viewId, irmaSessionType, irmaSessionId, data));
+      const data = yield call(service.poll, irmaSessionId);
+      yield put(
+        actions.processPollSuccess(viewId, irmaSessionType, irmaSessionId, data, irmaProofUrl),
+      );
       yield delay(1000);
     } catch (error) {
       yield put(actions.processPollFailure(viewId, irmaSessionId, error));
@@ -83,9 +99,11 @@ function* pollIrmaSessionSaga(viewId, irmaSessionType, irmaSessionId) {
 
 export function* watchPollSaga() {
   while (true) {
-    const { viewId, irmaSessionType, irmaSessionId } = yield take(types.START_POLLING);
+    const {
+      viewId, irmaSessionType, irmaSessionId, irmaProofUrl,
+    } = yield take(types.START_POLLING);
     yield race([
-      call(pollIrmaSessionSaga, viewId, irmaSessionType, irmaSessionId),
+      call(pollIrmaSessionSaga, viewId, irmaSessionType, irmaSessionId, irmaProofUrl),
       take(action => action.type === types.STOP_POLLING && action.irmaSessionId === irmaSessionId),
     ]);
   }

@@ -28,12 +28,14 @@ export const actions = {
     ({ type: types.SESSION_FAILED_TO_START, viewId, reason, data }),
   abandonIrmaSession: (viewId, irmaSessionId) =>
     ({ type: types.ABANDON_SESSION, viewId, irmaSessionId }),
-  startPolling: (viewId, irmaSessionType, irmaSessionId, qrContent) =>
-    ({ type: types.START_POLLING, viewId, irmaSessionType, irmaSessionId, qrContent }),
+  startPolling: (viewId, irmaSessionType, irmaSessionId, irmaProofUrl) =>
+    ({ type: types.START_POLLING, viewId, irmaSessionType, irmaSessionId, irmaProofUrl }),
   stopPolling: (viewId, irmaSessionId) =>
     ({ type: types.STOP_POLLING, viewId, irmaSessionId }),
-  processPollSuccess: (viewId, irmaSessionType, irmaSessionId, data) =>
-    ({ type: types.PROCESS_POLL_SUCCESS, viewId, irmaSessionType, irmaSessionId, data }),
+  processPollSuccess: (viewId, irmaSessionType, irmaSessionId, data, irmaProofUrl) =>
+    ({
+      type: types.PROCESS_POLL_SUCCESS, viewId, irmaSessionType, irmaSessionId, data, irmaProofUrl,
+    }),
   processPollFailure: (viewId, irmaSessionId, data) =>
     ({ type: types.PROCESS_POLL_FAILURE, viewId, irmaSessionId, data }),
   discloseSessionCompleted: (viewId, status, proofStatus, disclosedAttributes, jwt) =>

@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 
 function startIrmaSession(irmaUrl, type, disclose, message, credentials) {
   return axios
-    .post(`${irmaUrl}/session`, {
+    .post(`${irmaUrl}`, {
       '@context': `https://irma.app/ld/request/${type}/v2`,
       disclose,
       credentials,
@@ -12,9 +12,11 @@ function startIrmaSession(irmaUrl, type, disclose, message, credentials) {
     .then(response => response.data);
 }
 
-function pollJwt(token, irmaUrl, jwtPublicKey) {
+function getProofJwt(irmaProofUrl, jwtPublicKey) {
   return axios
-    .get(`${irmaUrl}/session/${token}/result-jwt`)
+    .get(`${irmaProofUrl}`, {
+      withCredentials: true,
+    })
     .then(response => response.data)
     .then((jwtToken) => {
       // TODO: IRMA server doesn't send audience?
@@ -27,22 +29,25 @@ function pollJwt(token, irmaUrl, jwtPublicKey) {
     });
 }
 
-function pollPlain(token, irmaUrl) {
+function getProof(irmaProofUrl, jwtEnabled, jwtPublicKey) {
+  if (jwtEnabled) {
+    return getProofJwt(irmaProofUrl, jwtEnabled, jwtPublicKey);
+  }
+
   return axios
-    .get(`${irmaUrl}/session/${token}/result`)
+    .get(`${irmaProofUrl}`)
     .then(response => response.data);
 }
 
-function poll(token, irmaUrl, jwtEnabled, jwtPublicKey) {
-  if (jwtEnabled) {
-    return pollJwt(token, irmaUrl, jwtPublicKey);
-  }
-
-  return pollPlain(token, irmaUrl);
+function poll(irmaSessionUrl) {
+  return axios
+    .get(`${irmaSessionUrl}/status`)
+    .then(response => ({ status: response.data }));
 }
 
 const service = {
   startIrmaSession,
+  getProof,
   poll,
 };
 
